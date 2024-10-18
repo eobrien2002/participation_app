@@ -1,0 +1,91 @@
+/* Shared Container Style */
+.homepage-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Title Styles for Email Verification and Reset Password */
+.homepage-title {
+  font-size: 2rem;
+  color: #007bff;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Info Container (shared) */
+.info-container {
+  background-color: #ffefc5; /* Similar to info message style */
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.success-container {
+  background-color: #d4edda; /* Success background color */
+  color: #155724;
+}
+
+.error-container {
+  background-color: #f8d7da; /* Error background color */
+  color: #721c24;
+}
+
+/* Reset Password Form */
+.reset-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Input already defined */
+.modal-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* Success Message */
+.success-message {
+  color: #28a745;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+/* Error Message */
+.error-message {
+  color: #dc3545;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+/* Create Button already defined */
+.create-button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+.create-button:hover {
+  background-color: #0056b3;
+}

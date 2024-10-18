@@ -1,0 +1,326 @@
+/* General Container Styling */
+.container {
+  font-family: "Roboto", sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-size: 13px; /* Smaller and more minimalistic font size */
+}
+
+/* Define Color Variables */
+:root {
+  --color-primary: #093152;
+  --color-secondary: #007cb4;
+  --color-tertiary: #c2deea;
+  --color-light-grey: #f1f3f5;
+  --color-light: #f8f9fa;
+  --color-dark: #333333;
+  --color-border: #ccc;
+}
+
+/* Navigation Bar Styling */
+.nav-bar {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.classroom-id {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-left: 15px;
+}
+
+/* Attendance and Statistics */
+.attendance-stats {
+  background-color: var(--color-light-grey);
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-list {
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-bottom: 10px;
+}
+
+.attendance-list span {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 3px 8px;
+  background-color: #e0e0e0;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.class-stats {
+  font-size: 13px;
+  color: var(--color-dark);
+  text-align: left;
+}
+
+/* Main Content */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.card {
+  background-color: var(--color-light);
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card h2 {
+  color: var(--color-primary);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* Queue */
+.queue-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.queue-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.queue-list li {
+  background-color: var(--color-light);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  font-size: 13px;
+}
+
+.student-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--color-secondary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* Selected Student */
+.selected-student {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.selected-student-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: var(--color-secondary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.selected-student-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Button Styling */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+/* Styling specific to the 'Select' button */
+.btn-select {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 6px 12px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-select:hover {
+  background-color: #061e3b;
+}
+
+/* Styling specific to the 'Cold Call' button */
+.btn-cold-call {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 6px 12px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-cold-call:hover {
+  background-color: #061e3b;
+}
+
+/* Styling specific to the 'Reset' button */
+.btn-reset {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 6px 12px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-reset:hover {
+  background-color: #061e3b;
+}
+
+.button-container button + button {
+  margin-left: 10px;
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.slide-in {
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .classroom-id {
+    margin-left: 0;
+    margin-top: 5px;
+  }
+
+  /* General Button Styling */
+  .button-container button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .button-container .icon {
+    font-size: 16px;
+  }
+
+  /* Styling for the 'Select' button */
+  .btn-select {
+    background-color: var(--color-primary);
+    color: white;
+  }
+
+  .btn-select:hover {
+    background-color: #061e3b; /* Darker shade for hover */
+  }
+
+  /* Styling for the 'Cold Call' button */
+  .btn-cold-call {
+    background-color: var(--color-secondary);
+    color: white;
+  }
+
+  .btn-cold-call:hover {
+    background-color: #00608c; /* Darker shade for hover */
+  }
+
+  /* Styling for the 'Reset' button */
+  .btn-reset {
+    background-color: var(--color-tertiary);
+    color: var(--color-primary);
+  }
+
+  .btn-reset:hover {
+    background-color: #aec9d8; /* Darker shade for hover */
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+.footer-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-image {
+  width: 120px; /* Adjust the width as needed */
+  height: auto;
+}
+
+/* Footer Styling */
+.homepage-footer {
+  background-color: var(--color-primary);
+  color: white;
+  text-align: center;
+  padding: 15px 20px;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,0 +1,38 @@
+{
+  "name": "participationtracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "QueueDisplay.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.4.0",
+    "express-validator": "^7.2.0",
+    "firebase-admin": "^12.6.0",
+    "helmet": "^8.0.0",
+    "http": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.15",
+    "path": "^0.12.7",
+    "react-modal": "^3.16.1",
+    "react-router-dom": "^6.26.2",
+    "socket.io": "^4.7.5",
+    "uuid": "^10.0.0",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.6"
+  }
+}
