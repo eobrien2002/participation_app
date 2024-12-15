@@ -6,6 +6,7 @@ import Classroom from "./components/Classroom";
 import Student from "./components/Student";
 import VerifyEmail from "./components/VerifyEmail";
 import ResetPassword from "./components/ResetPassword";
+import Remote from "./components/Remote";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/classroom/:classroomId" element={<Classroom />} />
         <Route path="/student/:classroomId" element={<Student />} />
+        <Route path="/remote" element={<Remote />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>

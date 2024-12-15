@@ -212,6 +212,36 @@ const verifyClassroom = async (req, res) => {
   res.status(200).json({ message: "Classroom found", classroomName });
 };
 
+const getUserClassrooms = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const classroomsSnapshot = await db
+      .collection("classrooms")
+      .where("creatorId", "==", userId)
+      .get();
+
+    if (classroomsSnapshot.empty) {
+      return res.status(200).json({ success: true, classrooms: [] });
+    }
+
+    const classrooms = [];
+    classroomsSnapshot.forEach((doc) => {
+      const data = doc.data();
+      classrooms.push({
+        id: doc.id,
+        name: data.name,
+        createdAt: data.createdAt,
+      });
+    });
+
+    res.status(200).json({ success: true, classrooms });
+  } catch (error) {
+    console.error("Error fetching user classrooms:", error);
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+};
+
 module.exports = {
   raiseHand,
   lowerHand,
@@ -220,4 +250,5 @@ module.exports = {
   createClassroom,
   logAttendance,
   verifyClassroom,
+  getUserClassrooms,
 };

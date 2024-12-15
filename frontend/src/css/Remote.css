@@ -1,0 +1,354 @@
+/* src/css/Remote.css */
+
+/* Define Color Variables */
+:root {
+  --color-primary: #093152;
+  --color-secondary: #007cb4;
+  --color-tertiary: #c2deea;
+  --color-light-grey: #f1f3f5;
+  --color-light: #f8f9fa;
+  --color-dark: #333333;
+  --color-border: #ccc;
+}
+
+/* General Container Styling */
+.remote-container {
+  font-family: "Roboto", sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-size: 14px; /* Adjusted for better readability */
+  background-color: var(--color-light); /* Consistent background */
+  min-height: 100vh; /* Ensure full height */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation Bar Styling */
+.remote-nav {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.remote-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.remote-classroom-id {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+/* Sign-In Form Styling */
+.remote-sign-in-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.remote-sign-in-form {
+  background-color: var(--color-light-grey);
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.remote-sign-in-form h2 {
+  margin-bottom: 20px;
+  color: var(--color-primary);
+  text-align: center;
+}
+
+.remote-input-field {
+  width: 100%;
+  padding: 12px 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.remote-error-message {
+  color: red;
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.remote-info-message {
+  color: green;
+  font-size: 0.9em;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.remote-button-primary {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.remote-button-primary:hover {
+  background-color: #061e3b;
+}
+
+/* Classrooms List Styling */
+.remote-classrooms-list {
+  flex-grow: 1;
+}
+
+.remote-classrooms-list h2 {
+  color: var(--color-primary);
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.remote-classroom-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.remote-classroom-item {
+  background-color: var(--color-light-grey);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.remote-classroom-name {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: var(--color-dark);
+  margin-bottom: 10px;
+}
+
+.remote-classroom-id {
+  font-size: 1em;
+  color: var(--color-secondary);
+  margin-bottom: 15px;
+}
+
+.remote-classroom-item .remote-button-primary {
+  align-self: flex-end;
+}
+
+/* Remote Control Interface Styling */
+.remote-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.remote-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 30px;
+}
+
+.remote-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
+  font-size: 1em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.remote-btn-select {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.remote-btn-select:hover {
+  background-color: #061e3b;
+}
+
+.remote-btn-cold-call {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+.remote-btn-cold-call:hover {
+  background-color: #005fa3;
+}
+
+.remote-btn-reset {
+  background-color: var(--color-tertiary);
+  color: var(--color-primary);
+}
+
+.remote-btn-reset:hover {
+  background-color: #aec9d8;
+}
+
+.remote-selected {
+  text-align: center;
+  padding: 20px;
+  background-color: var(--color-light-grey);
+  border-radius: 8px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.remote-selected h3 {
+  margin-bottom: 15px;
+  color: var(--color-primary);
+}
+
+.remote-selected-student {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--color-dark);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .remote-container {
+    padding: 15px;
+  }
+
+  .remote-nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .remote-classroom-id {
+    margin-left: 0;
+    margin-top: 5px;
+  }
+
+  .remote-sign-in-form,
+  .remote-classrooms-list,
+  .remote-content {
+    width: 100%;
+  }
+
+  .remote-buttons {
+    max-width: 100%;
+  }
+
+  .remote-btn {
+    padding: 12px;
+    font-size: 0.95em;
+  }
+
+  .remote-selected {
+    padding: 15px;
+  }
+
+  .remote-selected h3 {
+    font-size: 1.1em;
+  }
+
+  .remote-selected-student {
+    font-size: 1em;
+  }
+
+  .remote-classrooms-list h2 {
+    font-size: 1.5em;
+  }
+
+  .remote-classroom-name {
+    font-size: 1.1em;
+  }
+
+  .remote-classroom-id {
+    font-size: 0.95em;
+  }
+
+  .remote-button-primary {
+    padding: 10px;
+    font-size: 0.95em;
+  }
+}
+
+/* Animations (Optional) */
+.remote-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.remote-slide-in {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Remote Footer Styling (if needed) */
+.remote-footer-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.remote-logo-image {
+  width: 120px; /* Adjust the width as needed */
+  height: auto;
+}
+
+/* Remote Footer Styling */
+.remote-homepage-footer {
+  background-color: var(--color-primary);
+  color: white;
+  text-align: center;
+  padding: 15px 20px;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

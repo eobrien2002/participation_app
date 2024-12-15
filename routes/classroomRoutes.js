@@ -24,4 +24,7 @@ router.post("/log-attendance", classroomController.logAttendance);
 // Verify Classroom
 router.post("/verify-classroom", classroomController.verifyClassroom);
 
+// Get User Classrooms
+router.get("/user-classrooms/:userId", classroomController.getUserClassrooms);
+
 module.exports = router;

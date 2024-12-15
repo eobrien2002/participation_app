@@ -27,8 +27,6 @@ const createClassroom = async (name, creatorId) => {
   return classroomId;
 };
 
-// Add more classroom-related services as needed
-
 module.exports = {
   getClassroomData,
   createClassroom,
