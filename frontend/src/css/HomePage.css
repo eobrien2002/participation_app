@@ -1,309 +1,187 @@
-/* General Container Styling */
+/* HomePage.css */
+
+/* Container */
 .homepage-container {
-  font-family: "Roboto", sans-serif;
-  margin: 0;
-  padding: 0;
-  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-/* Define Color Variables */
-:root {
-  --color-primary: #093152;
-  --color-secondary: #007cb4;
-  --color-tertiary: #c2deea;
-  --color-light-grey: #f1f3f5;
-  --color-light: #f8f9fa;
-  --color-dark: #333333;
-  --color-border: #ccc;
-}
-
-/* Header Styling */
+/* Header */
 .homepage-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background-color: var(--color-primary);
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px 30px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-.logo-container,
-.footer-logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.logo-image {
-  width: 120px; /* Adjust the width as needed */
-  height: auto;
-}
-
-.cta-container {
-  margin-right: 20px;
-}
-
-/* Footer Styling */
-.homepage-footer {
-  background-color: var(--color-primary);
-  color: white;
-  text-align: center;
-  padding: 15px 20px;
-  position: relative;
-  bottom: 0;
-  width: 100%;
-  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Button Styling */
-.button-primary {
-  background-color: var(--color-primary);
-  color: white;
-  padding: 8px 16px;
-  font-size: 13px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.button-primary:hover {
-  background-color: #061e3b;
-}
-
-.button-secondary {
-  background-color: transparent;
-  color: var(--color-secondary);
-  padding: 8px 16px;
-  font-size: 13px;
-  border: 1px solid var(--color-secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.button-secondary:hover {
-  background-color: var(--color-secondary);
-  color: white;
-}
-
-/* Hero Section Styling */
-.hero-section {
-  position: relative;
-  width: 100%;
-  min-height: 100vh; /* Ensure full screen height */
-  background-image: url("./assets/hero-background.jpg");
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.hero-content {
-  max-width: 800px;
-}
-
-.hero-title {
-  font-size: 36px;
-  margin-bottom: 20px;
+.brand-name {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 20px;
   font-weight: 700;
   color: var(--color-primary);
 }
 
+/* Hero Section */
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 20px;
+  background: var(--color-light-bg);
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 15px;
+}
+.forgot-password {
+  text-align: center;
+  margin-top: 10px; /* Optional: Adjust spacing as needed */
+}
+
+.forgot-password .link-button {
+  display: inline-block; /* Ensure the button behaves like an inline element */
+  background: none;
+  border: none;
+  color: var(--color-link);
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  /* Center alignment is handled by the parent .forgot-password */
+}
 .hero-subtitle {
   font-size: 16px;
+  color: var(--color-light-text);
   margin-bottom: 30px;
-  color: var(--color-primary);
 }
 
-.hero-section .button-primary {
-  background-color: var(--color-tertiary);
-  color: var(--color-primary);
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.hero-section .button-primary:hover {
-  background-color: #aec9d8; /* Added hover effect */
-}
-
-/* Create Classroom Section Styling */
+/* Create Classroom Section */
 .create-classroom-section {
-  background-color: var(--color-tertiary);
-  padding: 70px 20px;
   text-align: center;
+  padding: 80px 20px;
+  background: var(--color-bg);
 }
 
 .create-classroom-content {
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
-  min-height: 200px;
 }
 
 .section-title {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: var(--color-primary);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--color-text);
 }
 
 .section-subtitle {
   font-size: 14px;
+  color: var(--color-light-text);
   margin-bottom: 30px;
-  color: #666;
 }
 
 /* Benefits Section */
 .benefits-section {
+  background: var(--color-light-bg);
+  padding: 60px 20px;
   display: flex;
   justify-content: center;
-  padding: 50px 20px;
-  background-color: var(--color-light-grey);
 }
 
 .benefits-container {
   display: flex;
-  justify-content: space-between;
-  max-width: 1200px;
-  width: 100%;
-  gap: 20px;
+  gap: 30px;
+  max-width: 1000px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .benefit-tile {
-  flex: 1 1 30%;
-  padding: 20px;
-  background-color: var(--color-light-grey);
+  background: #fff;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 30px 20px;
+  width: 280px;
+  transition: box-shadow var(--transition-speed) ease,
+    transform var(--transition-speed) ease;
 }
 
 .benefit-tile:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .benefit-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: var(--color-primary);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--color-text);
 }
 
 .benefit-description {
-  font-size: 14px;
-  color: #555;
-}
-
-/* Modal Styles */
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  height: 300px;
-}
-
-.modal-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  text-align: center;
-  color: var(--color-primary);
-}
-
-.modal-button-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.modal-close-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 16px;
-  font-weight: normal;
-  color: var(--color-dark);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* Input Fields */
-.input-field {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
   font-size: 13px;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  box-sizing: border-box;
+  color: var(--color-light-text);
 }
 
-.input-field:focus {
-  border-color: var(--color-secondary);
-  outline: none;
-}
-
-/* Error and Info Messages */
-.error-message {
-  color: #ff4d4f;
-  font-size: 12px;
-  margin-bottom: 10px;
-}
-
-.info-message {
-  color: #28a745;
-  font-size: 12px;
-  margin-bottom: 10px;
-}
-
-/* Forgot Password Link */
-.forgot-password {
+/* Footer */
+.homepage-footer {
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  padding: 20px;
   text-align: center;
-  margin-top: 10px;
+  margin-top: auto;
 }
 
-.forgot-password .link-button {
-  background: none;
-  border: none;
-  color: var(--color-secondary);
-  cursor: pointer;
+.footer-text {
   font-size: 12px;
-  padding: 0;
-  text-decoration: underline;
+  color: var(--color-light-text);
 }
 
-/* Additional Styles for Structure */
+/* Responsive */
 @media (max-width: 768px) {
+  .homepage-header {
+    padding: 10px 20px;
+  }
+
+  .hero-title {
+    font-size: 24px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+
   .benefits-container {
-    flex-direction: column;
-    align-items: center;
+    gap: 20px;
   }
 
   .benefit-tile {
-    flex: 1 1 100%;
-    max-width: 90%;
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 60px 20px;
+  }
+
+  .create-classroom-section {
+    padding: 60px 20px;
   }
 }

@@ -3,12 +3,20 @@ const { db, admin } = require("../config/firebase");
 const { v4: uuidv4 } = require("uuid");
 const broadcastEvent = require("../utils/broadcast");
 
-const classroomsCollection = db.collection("classrooms");
+// Updated to reference classrooms within a specific class
+const getClassroomsCollection = (classID) => {
+  return db.collection("classes").doc(classID).collection("classrooms");
+};
 
 // Raise hand
 const raiseHand = async (req, res) => {
-  const { studentId, classroomId, studentName } = req.body;
+  const { studentId, classroomId, studentName, classID } = req.body;
 
+  if (!classID) {
+    return res.status(400).json({ message: "Class ID is required." });
+  }
+
+  const classroomsCollection = getClassroomsCollection(classID);
   const classroomRef = classroomsCollection.doc(classroomId);
   const classroomDoc = await classroomRef.get();
 
@@ -19,7 +27,12 @@ const raiseHand = async (req, res) => {
     if (!queue.some((student) => student.id === studentId)) {
       queue.push({ id: studentId, name: studentName });
       await classroomRef.update({ queue });
-      broadcastEvent(req.app.locals.clients, classroomId, "queueUpdate", queue);
+      broadcastEvent(
+        req.app.locals.clients,
+        `${classID}_${classroomId}`,
+        "queueUpdate",
+        queue
+      );
     }
     res.sendStatus(200);
   } else {
@@ -27,10 +40,17 @@ const raiseHand = async (req, res) => {
   }
 };
 
+// Repeat similar changes for other controller methods...
+
 // Lower hand
 const lowerHand = async (req, res) => {
-  const { studentId, classroomId } = req.body;
+  const { studentId, classroomId, classID } = req.body;
 
+  if (!classID) {
+    return res.status(400).json({ message: "Class ID is required." });
+  }
+
+  const classroomsCollection = getClassroomsCollection(classID);
   const classroomRef = classroomsCollection.doc(classroomId);
   const classroomDoc = await classroomRef.get();
 
@@ -40,7 +60,12 @@ const lowerHand = async (req, res) => {
 
     queue = queue.filter((student) => student.id !== studentId);
     await classroomRef.update({ queue });
-    broadcastEvent(req.app.locals.clients, classroomId, "queueUpdate", queue);
+    broadcastEvent(
+      req.app.locals.clients,
+      `${classID}_${classroomId}`,
+      "queueUpdate",
+      queue
+    );
     res.sendStatus(200);
   } else {
     res.status(404).json({ message: "Classroom not found" });
@@ -49,98 +74,141 @@ const lowerHand = async (req, res) => {
 
 // Select student
 const selectStudent = async (req, res) => {
-  const { classroomId, isColdCall } = req.body;
+  const { classID, classroomId } = req.params; // Extract from URL params
+  const { isColdCall, userID } = req.body; // Extract from request body
 
-  const classroomRef = classroomsCollection.doc(classroomId);
-  const classroomDoc = await classroomRef.get();
-
-  if (!classroomDoc.exists) return res.sendStatus(404);
-
-  const classroomData = classroomDoc.data();
-  let selectedStudent = null;
-
-  if (isColdCall) {
-    const attendedStudents = classroomData.attended || [];
-    if (attendedStudents.length === 0) return res.sendStatus(200);
-    selectedStudent =
-      attendedStudents[Math.floor(Math.random() * attendedStudents.length)];
-  } else {
-    const queue = classroomData.queue || [];
-    if (queue.length === 0) return res.sendStatus(200);
-    const sortedQueue = [...queue].sort(
-      (a, b) =>
-        (classroomData.participation?.[a.id] || 0) -
-        (classroomData.participation?.[b.id] || 0)
-    );
-    selectedStudent = sortedQueue[0];
+  if (!classID || !classroomId) {
+    return res
+      .status(400)
+      .json({ message: "Class ID and Classroom ID are required." });
   }
 
-  if (!selectedStudent) return res.sendStatus(200);
+  try {
+    const classroomsCollection = getClassroomsCollection(classID);
+    const classroomRef = classroomsCollection.doc(classroomId);
+    const classroomDoc = await classroomRef.get();
 
-  // Remove selected student from the queue if present
-  let updatedQueue = classroomData.queue || [];
-  const isInQueue = updatedQueue.some(
-    (student) => student.id === selectedStudent.id
-  );
-  if (isInQueue) {
-    updatedQueue = updatedQueue.filter(
-      (student) => student.id !== selectedStudent.id
+    if (!classroomDoc.exists) {
+      return res.status(404).json({ message: "Classroom not found." });
+    }
+
+    const classroomData = classroomDoc.data();
+    let selectedStudent = null;
+
+    if (isColdCall) {
+      const attendedStudents = classroomData.attended || [];
+      if (attendedStudents.length === 0) return res.sendStatus(200);
+      selectedStudent =
+        attendedStudents[Math.floor(Math.random() * attendedStudents.length)];
+    } else {
+      const queue = classroomData.queue || [];
+      if (queue.length === 0) return res.sendStatus(200);
+      const sortedQueue = [...queue].sort(
+        (a, b) =>
+          (classroomData.participation?.[a.id] || 0) -
+          (classroomData.participation?.[b.id] || 0)
+      );
+      selectedStudent = sortedQueue[0];
+    }
+
+    if (!selectedStudent) return res.sendStatus(200);
+
+    // Remove selected student from the queue if present
+    let updatedQueue = classroomData.queue || [];
+    const isInQueue = updatedQueue.some(
+      (student) => student.id === selectedStudent.id
     );
-    await classroomRef.update({ queue: updatedQueue });
+    if (isInQueue) {
+      updatedQueue = updatedQueue.filter(
+        (student) => student.id !== selectedStudent.id
+      );
+      await classroomRef.update({ queue: updatedQueue });
+      broadcastEvent(
+        req.app.locals.clients,
+        `${classID}_${classroomId}`,
+        "queueUpdate",
+        updatedQueue
+      );
+    }
+
+    // Update participation
+    const participation = classroomData.participation || {};
+    participation[selectedStudent.id] =
+      (participation[selectedStudent.id] || 0) + 1;
+
+    await classroomRef.update({
+      selectedStudent,
+      participation,
+    });
+
     broadcastEvent(
       req.app.locals.clients,
-      classroomId,
-      "queueUpdate",
-      updatedQueue
+      `${classID}_${classroomId}`,
+      "studentSelected",
+      selectedStudent
     );
+    broadcastEvent(
+      req.app.locals.clients,
+      `${classID}_${classroomId}`,
+      "participationUpdate",
+      {
+        student: selectedStudent,
+        count: participation[selectedStudent.id],
+      }
+    );
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error selecting student:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
-
-  // Update participation
-  const participation = classroomData.participation || {};
-  participation[selectedStudent.id] =
-    (participation[selectedStudent.id] || 0) + 1;
-
-  await classroomRef.update({
-    selectedStudent,
-    participation,
-  });
-
-  broadcastEvent(
-    req.app.locals.clients,
-    classroomId,
-    "studentSelected",
-    selectedStudent
-  );
-  broadcastEvent(req.app.locals.clients, classroomId, "participationUpdate", {
-    student: selectedStudent,
-    count: participation[selectedStudent.id],
-  });
-
-  res.sendStatus(200);
 };
 
 // Reset queue
 const resetQueue = async (req, res) => {
-  const { classroomId } = req.body;
+  const { classID, classroomId } = req.params; // Extract from URL params
 
-  const classroomRef = classroomsCollection.doc(classroomId);
-  const classroomDoc = await classroomRef.get();
+  if (!classID || !classroomId) {
+    return res
+      .status(400)
+      .json({ message: "Class ID and Classroom ID are required." });
+  }
 
-  if (classroomDoc.exists) {
+  try {
+    const classroomsCollection = getClassroomsCollection(classID);
+    const classroomRef = classroomsCollection.doc(classroomId);
+    const classroomDoc = await classroomRef.get();
+
+    if (!classroomDoc.exists) {
+      return res.status(404).json({ message: "Classroom not found." });
+    }
+
     await classroomRef.update({
       queue: [],
       selectedStudent: null,
     });
-    broadcastEvent(req.app.locals.clients, classroomId, "queueReset", null);
+
+    broadcastEvent(
+      req.app.locals.clients,
+      `${classID}_${classroomId}`,
+      "queueReset",
+      null
+    );
+
     res.sendStatus(200);
-  } else {
-    res.status(404).json({ message: "Classroom not found" });
+  } catch (error) {
+    console.error("Error resetting queue:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
 
 // Create classroom
 const createClassroom = async (req, res) => {
-  const { name, creatorId } = req.body;
+  const { name, creatorId, classID } = req.body;
+
+  if (!classID) {
+    return res.status(400).json({ message: "Class ID is required." });
+  }
 
   try {
     // Verify if creatorId exists in users collection
@@ -149,6 +217,7 @@ const createClassroom = async (req, res) => {
       return res.status(400).json({ message: "Invalid creator ID." });
     }
 
+    const classroomsCollection = getClassroomsCollection(classID);
     const classroomId = uuidv4().slice(0, 6);
     const classroomRef = classroomsCollection.doc(classroomId);
     await classroomRef.set({
@@ -170,8 +239,13 @@ const createClassroom = async (req, res) => {
 
 // Log attendance
 const logAttendance = async (req, res) => {
-  const { classroomId, studentName, studentId } = req.body;
+  const { classroomId, studentName, studentId, classID } = req.body;
 
+  if (!classID) {
+    return res.status(400).json({ message: "Class ID is required." });
+  }
+
+  const classroomsCollection = getClassroomsCollection(classID);
   const classroomRef = classroomsCollection.doc(classroomId);
   const classroomDoc = await classroomRef.get();
 
@@ -187,7 +261,7 @@ const logAttendance = async (req, res) => {
     await classroomRef.update({ attended });
     broadcastEvent(
       req.app.locals.clients,
-      classroomId,
+      `${classID}_${classroomId}`,
       "attendanceUpdate",
       attended
     );
@@ -201,23 +275,45 @@ const logAttendance = async (req, res) => {
 const verifyClassroom = async (req, res) => {
   const { classroomId } = req.body;
 
-  const classroomRef = classroomsCollection.doc(classroomId);
-  const classroomDoc = await classroomRef.get();
-
-  if (!classroomDoc.exists) {
-    return res.status(404).json({ message: "Classroom not found" });
+  if (!classroomId) {
+    return res.status(400).json({ message: "Classroom ID is required." });
   }
 
-  const classroomName = classroomDoc.data().name;
-  res.status(200).json({ message: "Classroom found", classroomName });
+  try {
+    const classesSnapshot = await db.collection("classes").get();
+
+    for (const classDoc of classesSnapshot.docs) {
+      const classroomSnapshot = await classDoc.ref
+        .collection("classrooms")
+        .doc(classroomId)
+        .get();
+
+      if (classroomSnapshot.exists) {
+        return res.status(200).json({
+          className: classDoc.data().name,
+          classroomName: classroomSnapshot.data().name, // Corrected key name
+          classID: classDoc.id,
+        });
+      }
+    }
+
+    return res.status(404).json({ message: "Classroom not found." });
+  } catch (error) {
+    console.error("Error in verifyClassroom:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
 };
 
+// Get user classrooms
 const getUserClassrooms = async (req, res) => {
-  const { userId } = req.params;
+  const { userId, classID } = req.params;
 
   try {
-    const classroomsSnapshot = await db
-      .collection("classrooms")
+    const classroomsCollection = db
+      .collection("classes")
+      .doc(classID)
+      .collection("classrooms");
+    const classroomsSnapshot = await classroomsCollection
       .where("creatorId", "==", userId)
       .get();
 

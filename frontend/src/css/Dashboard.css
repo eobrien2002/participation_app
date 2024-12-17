@@ -1,0 +1,417 @@
+/* Dashboard.css */
+
+/* Container */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Logo Button */
+.logo-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  transition: color var(--transition-speed) ease;
+}
+
+.logo-button:hover {
+  color: var(--color-primary);
+}
+
+.logo-icon {
+  font-size: 20px;
+  color: var(--color-primary);
+}
+
+/* Brand Name */
+.brand-name {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Dashboard Actions */
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Edit Button */
+.button-edit {
+  background: transparent;
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+  border-radius: 18px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color var(--transition-speed) ease,
+    color var(--transition-speed) ease,
+    border-color var(--transition-speed) ease;
+}
+
+.button-edit:hover {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.button-edit.active {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.edit-icon {
+  font-size: 14px;
+}
+
+/* Main Content */
+.dashboard-main {
+  flex: 1;
+  padding: 20px;
+  background-color: var(--color-light-grey);
+}
+
+/* Sections */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 15px;
+}
+
+/* Classes Section */
+.classes-section {
+  margin-bottom: 30px;
+}
+
+.classes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.class-card {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 15px;
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease,
+    box-shadow var(--transition-speed) ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  position: relative; /* To position the delete button */
+}
+
+.class-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.class-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-align: center;
+}
+
+/* Delete Button */
+.delete-button {
+  background: transparent;
+  border: none;
+  color: var(--color-error);
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 0 8px;
+  transition: color var(--transition-speed) ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-button:hover {
+  color: #a00; /* A darker shade of red */
+}
+
+/* Confirmation Modal Buttons Container */
+.modal-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Create Class Section */
+.create-class-section {
+  background-color: var(--color-bg);
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.create-class-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-class-form .input-field {
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.create-class-form .button-primary {
+  align-self: flex-start;
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+/* Alert Messages */
+.alert-message {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.alert-error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error-text);
+}
+
+.alert-success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+/* Loading Spinner */
+.spinner {
+  border: 3px solid var(--color-light);
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  animation: spin 1s linear infinite;
+  margin: 15px auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* No Classes Message */
+.no-classes-message {
+  font-size: 13px;
+  color: var(--color-light-text);
+  text-align: center;
+  margin-top: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brand-name {
+    font-size: 16px;
+    margin-top: 8px;
+  }
+
+  .classes-list {
+    grid-template-columns: 1fr;
+  }
+
+  .create-class-form .button-primary {
+    width: 100%;
+  }
+
+  .button-edit {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .edit-icon {
+    font-size: 13px;
+  }
+
+  .logo-button {
+    margin-right: 8px;
+  }
+
+  .logo-icon {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-main {
+    padding: 15px;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .class-card {
+    height: 90px;
+    padding: 12px;
+  }
+
+  .class-name {
+    font-size: 13px;
+  }
+
+  .delete-button {
+    font-size: 0.9rem;
+    padding: 0 4px;
+  }
+
+  .button-edit {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .edit-icon {
+    font-size: 12px;
+  }
+
+  .logo-icon {
+    font-size: 16px;
+  }
+}
+
+/* Modal Styles */
+.modal-overlay {
+  background-color: var(--color-modal-overlay);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  background: #fff;
+  padding: 20px 15px;
+  transform: translate(-50%, -50%);
+  border-radius: 6px;
+  width: 280px;
+  max-width: 90%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -55%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 15px;
+  color: var(--color-text);
+}
+
+.modal-message {
+  font-size: 13px;
+  color: var(--color-text);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal-close-icon {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--color-light-text);
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.modal-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Buttons within Modal */
+.button-danger {
+  background-color: var(--color-error);
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.button-danger:hover {
+  background-color: #a00;
+}
+
+.button-secondary {
+  background-color: #f7f7f7;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.button-secondary:hover {
+  background-color: #ebebeb;
+}

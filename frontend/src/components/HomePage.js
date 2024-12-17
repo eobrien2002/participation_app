@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Modal from "react-modal";
 import "../css/HomePage.css";
+import "../css/styles.css"; // Import general styles
 
 Modal.setAppElement("#root");
 
@@ -28,7 +29,6 @@ const HomePage = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [resetMessage, setResetMessage] = useState("");
 
-  // Handle email verification if token is present in URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
@@ -43,11 +43,7 @@ const HomePage = () => {
       const response = await axios.get(
         `http://localhost:3000/verify-email?token=${token}`
       );
-      if (response.data.success) {
-        setErrorMessage(response.data.message);
-      } else {
-        setErrorMessage(response.data.message);
-      }
+      setErrorMessage(response.data.message);
     } catch (error) {
       console.error("Error verifying email:", error);
       setErrorMessage(
@@ -63,7 +59,9 @@ const HomePage = () => {
       setShowSignInModal(true);
       return;
     }
-    setShowClassroomNameInput(true);
+    // Instead of creating a classroom here, the user will go to the dashboard to create classes.
+    // Navigate to the dashboard with the userID.
+    navigate(`/dashboard?userID=${user.id}`);
   };
 
   const handleSignIn = async (e) => {
@@ -78,17 +76,13 @@ const HomePage = () => {
       if (response.data.success) {
         setUser(response.data.user);
         setShowSignInModal(false);
-        setShowClassroomNameInput(true);
-        // Clear email and password fields after successful login
-        setEmail("");
-        setPassword("");
+        // On successful login, navigate to the dashboard
+        navigate(`/dashboard?userID=${response.data.user.id}`);
       } else {
-        // Display specific error message from the server
         setErrorMessage(response.data.message);
       }
     } catch (error) {
       console.error("Error during sign in:", error);
-      // Display a generic error message
       setErrorMessage(
         error.response?.data?.message ||
           "An error occurred during sign in. Please try again."
@@ -111,12 +105,10 @@ const HomePage = () => {
           "Registration successful! Please check your email to verify your account."
         );
       } else {
-        // Display specific error message from the server
         setErrorMessage(response.data.message);
       }
     } catch (error) {
       console.error("Error during registration:", error);
-      // Check if the error response exists and has a message
       if (
         error.response &&
         error.response.data &&
@@ -124,27 +116,10 @@ const HomePage = () => {
       ) {
         setErrorMessage(error.response.data.message);
       } else {
-        // Display a generic error message
         setErrorMessage(
           "An error occurred during registration. Please try again."
         );
       }
-    }
-  };
-
-  const handleClassroomNameSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/create-classroom",
-        { name: classroomName, creatorId: user.id } // Pass creatorId if needed
-      );
-      navigate(`/classroom/${response.data.classroomId}`, {
-        state: { classroomName },
-      });
-    } catch (error) {
-      console.error("Error creating classroom:", error);
-      setErrorMessage("Failed to create classroom. Please try again.");
     }
   };
 
@@ -168,10 +143,10 @@ const HomePage = () => {
         }
       );
 
-      const { classroomName } = response.data;
+      const { className, classroomName, classID } = response.data;
 
       navigate(`/student/${joinClassroomId}`, {
-        state: { studentName, studentId, classroomName },
+        state: { className, classroomName, classID, studentName, studentId },
       });
       closeModal();
     } catch (error) {
@@ -179,20 +154,16 @@ const HomePage = () => {
     }
   };
 
-  // Function to handle closing the sign-in modal
   const handleCloseSignInModal = () => {
     setShowSignInModal(false);
     setErrorMessage("");
-    // Optionally, clear email and password fields
     setEmail("");
     setPassword("");
   };
 
-  // Function to toggle between sign-in and sign-up modes
   const toggleSignInSignUp = () => {
     setIsSignIn(!isSignIn);
-    setErrorMessage(""); // Reset error message when switching modes
-    // Optionally, clear email and password fields
+    setErrorMessage("");
     setEmail("");
     setPassword("");
   };
@@ -221,15 +192,11 @@ const HomePage = () => {
 
   return (
     <div className="homepage-container">
-      {/* Header with Logo and Sign Up / Login CTA */}
       <header className="homepage-header">
-        <div className="logo-container">
-          <img src="assets/logo.png" alt="Logo" className="logo-image" />{" "}
-          {/* Logo image */}
-        </div>
-        <div className="cta-container">
+        <div className="brand-name">Quotient</div>
+        <div className="header-actions">
           <button
-            className="button-primary"
+            className="button-link"
             onClick={() => setShowSignInModal(true)}
           >
             Sign Up / Log In
@@ -237,12 +204,11 @@ const HomePage = () => {
         </div>
       </header>
 
-      {/* Hero Section with Full-Bleed Image and Join Classroom CTA */}
       <section className="hero-section">
         <div className="hero-content">
-          <h1 className="hero-title">Join Your Classroom Today</h1>
+          <h1 className="hero-title">Your Digital Classroom, Simplified</h1>
           <p className="hero-subtitle">
-            Connect, collaborate, and learn seamlessly.
+            Seamlessly connect, collaborate, and engage.
           </p>
           <button className="button-primary" onClick={openModal}>
             Join a Classroom
@@ -250,84 +216,71 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* New Marketing Section for Creating a Classroom */}
       <section className="create-classroom-section">
         <div className="create-classroom-content">
-          <h2 className="section-title">
-            Create Your Virtual Classroom in Minutes
-          </h2>
+          <h2 className="section-title">Create Your Classroom in Minutes</h2>
           <p className="section-subtitle">
-            Empower your students with a seamless digital experience. Manage
-            everything in one place, from assignments to participation tracking,
-            without any hassle.
+            Empower your students with a streamlined, intuitive experience.
           </p>
-          <button className="button-primary" onClick={createClassroom}>
-            Create Your Classroom Now
+          <button className="button-secondary" onClick={createClassroom}>
+            Go to Dashboard
           </button>
         </div>
       </section>
 
-      {/* Three Tiles Marketing Section */}
       <section className="benefits-section">
         <div className="benefits-container">
           <div className="benefit-tile">
-            <h3 className="benefit-title">Remove Bias in Student Selection</h3>
+            <h3 className="benefit-title">Fair & Random</h3>
             <p className="benefit-description">
-              Our platform ensures a randomized and fair method of selecting
-              students for participation, removing unconscious biases from the
-              equation.
+              Automatically select students without bias.
             </p>
           </div>
           <div className="benefit-tile">
-            <h3 className="benefit-title">Automated Participation Tracking</h3>
+            <h3 className="benefit-title">Real-Time Engagement</h3>
             <p className="benefit-description">
-              Keep track of who is participating, and get instant insights into
-              how engaged your students are without manually marking attendance
-              or interaction.
+              Track participation and involvement effortlessly.
             </p>
           </div>
           <div className="benefit-tile">
-            <h3 className="benefit-title">Enhanced Collaboration Tools</h3>
+            <h3 className="benefit-title">Collaborative Tools</h3>
             <p className="benefit-description">
-              Facilitate group projects and class discussions effortlessly with
-              built-in collaboration tools that make teamwork efficient and
-              enjoyable.
+              Encourage teamwork with integrated discussion features.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Modal Components */}
+      {/* Join Classroom Modal */}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
-        contentLabel="Join Classroom Modal"
         className="modal"
         overlayClassName="modal-overlay"
       >
         <button className="modal-close-icon" onClick={closeModal}>
-          X
+          &times;
         </button>
         <h2 className="modal-title">Join Classroom</h2>
         <input
           type="text"
           value={joinClassroomId}
           onChange={(e) => setJoinClassroomId(e.target.value)}
-          placeholder="Enter Classroom ID"
+          placeholder="Classroom ID"
           className="input-field"
         />
         <input
           type="text"
           value={studentName}
           onChange={(e) => setStudentName(e.target.value)}
-          placeholder="Enter your Name"
+          placeholder="Your Name"
           className="input-field"
         />
         <input
           type="text"
           value={studentId}
           onChange={(e) => setStudentId(e.target.value)}
-          placeholder="Enter your Student ID"
+          placeholder="Student ID"
           className="input-field"
         />
         {errorMessage && <p className="error-message">{errorMessage}</p>}
@@ -342,12 +295,11 @@ const HomePage = () => {
       <Modal
         isOpen={showSignInModal}
         onRequestClose={handleCloseSignInModal}
-        contentLabel="Sign In Modal"
         className="modal"
         overlayClassName="modal-overlay"
       >
         <button className="modal-close-icon" onClick={handleCloseSignInModal}>
-          X
+          &times;
         </button>
         <h2 className="modal-title">
           {isSignIn ? "Sign In" : "Create Account"}
@@ -377,7 +329,7 @@ const HomePage = () => {
             </button>
             <button
               type="button"
-              className="button-secondary"
+              className="button-link-modal"
               onClick={toggleSignInSignUp}
             >
               {isSignIn
@@ -410,7 +362,6 @@ const HomePage = () => {
           setShowClassroomNameInput(false);
           setErrorMessage("");
         }}
-        contentLabel="Classroom Name Input"
         className="modal"
         overlayClassName="modal-overlay"
       >
@@ -418,15 +369,15 @@ const HomePage = () => {
           className="modal-close-icon"
           onClick={() => setShowClassroomNameInput(false)}
         >
-          X
+          &times;
         </button>
         <h2 className="modal-title">Create Classroom</h2>
-        <form onSubmit={handleClassroomNameSubmit}>
+        <form>
           <input
             type="text"
             value={classroomName}
             onChange={(e) => setClassroomName(e.target.value)}
-            placeholder="Enter Classroom Name"
+            placeholder="Classroom Name"
             className="input-field"
             required
           />
@@ -446,7 +397,6 @@ const HomePage = () => {
           setResetMessage("");
           setResetEmail("");
         }}
-        contentLabel="Password Reset Modal"
         className="modal"
         overlayClassName="modal-overlay"
       >
@@ -454,7 +404,7 @@ const HomePage = () => {
           className="modal-close-icon"
           onClick={() => setShowPasswordResetModal(false)}
         >
-          X
+          &times;
         </button>
         <h2 className="modal-title">Reset Password</h2>
         <form onSubmit={handleRequestPasswordReset}>
@@ -462,7 +412,7 @@ const HomePage = () => {
             type="email"
             value={resetEmail}
             onChange={(e) => setResetEmail(e.target.value)}
-            placeholder="Enter your Email"
+            placeholder="Your Email"
             className="input-field"
             required
           />
@@ -475,13 +425,10 @@ const HomePage = () => {
         </form>
       </Modal>
 
-      {/* Footer */}
       <footer className="homepage-footer">
-        <div className="footer-logo">
-          <img src="assets/logo.png" alt="Logo" className="logo-image" />{" "}
-          {/* Logo image */}
-        </div>
-        <p>&copy; 2024 Classroom App. All rights reserved.</p>
+        <p className="footer-text">
+          &copy; 2024 Quotient. All rights reserved.
+        </p>
       </footer>
     </div>
   );

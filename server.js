@@ -11,7 +11,8 @@ const { firebase } = require("./config");
 
 // Import routes
 const authRoutes = require("./routes/authRoutes");
-const classroomRoutes = require("./routes/classroomRoutes");
+const classroomRoutes = require("./routes/classroomRoutes"); // Ensure this is correct
+const classRoutes = require("./routes/classRoutes"); // Import classRoutes
 const sseRoutes = require("./routes/sseRoutes");
 
 // Import middleware
@@ -29,6 +30,7 @@ app.use(express.json());
 
 // Use Routes
 app.use("/", authRoutes);
+app.use("/", classRoutes); // Mount classRoutes
 app.use("/", classroomRoutes);
 app.use("/", sseRoutes);
 

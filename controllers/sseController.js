@@ -4,8 +4,11 @@ const { getClassroomData } = require("../services/classroomService");
 const clients = {}; // SSE clients per classroom
 
 const events = async (req, res) => {
-  const { classroomId, role, studentId, studentName } = req.query;
-  console.log(`${role} connected to classroom ${classroomId}`);
+  const { classID, classroomId, role, studentId, studentName } = req.query;
+
+  console.log(
+    `${role} connected to class ${classID}, classroom ${classroomId}`
+  );
 
   // Set headers for SSE
   res.setHeader("Content-Type", "text/event-stream");
@@ -13,7 +16,7 @@ const events = async (req, res) => {
   res.setHeader("Connection", "keep-alive");
 
   // Send initial data
-  const classroomData = await getClassroomData(classroomId);
+  const classroomData = await getClassroomData(classID, classroomId);
   if (classroomData) {
     const data = {
       queue: classroomData.queue || [],
@@ -26,18 +29,21 @@ const events = async (req, res) => {
     res.write(`data: ${JSON.stringify(data)}\n\n`);
   }
 
+  // Unique key for class and classroom
+  const clientKey = `${classID}_${classroomId}`;
+
   // Add client to the list
-  if (!clients[classroomId]) {
-    clients[classroomId] = [];
+  if (!clients[clientKey]) {
+    clients[clientKey] = [];
   }
-  clients[classroomId].push(res);
+  clients[clientKey].push(res);
 
   // Handle client disconnect
   req.on("close", () => {
-    console.log(`${role} disconnected from classroom ${classroomId}`);
-    clients[classroomId] = clients[classroomId].filter(
-      (client) => client !== res
+    console.log(
+      `${role} disconnected from class ${classID}, classroom ${classroomId}`
     );
+    clients[clientKey] = clients[clientKey].filter((client) => client !== res);
   });
 };
 

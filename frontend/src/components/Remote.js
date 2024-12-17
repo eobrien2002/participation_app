@@ -10,6 +10,7 @@ const Remote = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userID");
   const classroomId = searchParams.get("classroomID");
+  const classID = searchParams.get("classID"); // Added retrieval of classID
 
   // Authentication States
   const [email, setEmail] = useState("");
@@ -31,10 +32,11 @@ const Remote = () => {
   // EventSource State
   const [eventSource, setEventSource] = useState(null);
 
-  // Effect to verify authentication on component mount
+  // General Error State
+  const [errorMessage, setErrorMessage] = useState(""); // Define a general error state
+
   useEffect(() => {
-    // Optionally, check for a token in localStorage or cookies
-    // For simplicity, we'll assume authentication is based on sign-in in this component
+    // For simplicity, assume authentication is handled by sign-in below
   }, []);
 
   // Handle Sign-In Form Submission
@@ -70,24 +72,53 @@ const Remote = () => {
     setClassroomsError("");
 
     try {
-      const token = localStorage.getItem("authToken"); // Adjust based on your auth implementation
-
-      const response = await axios.get(
-        `http://localhost:3000/user-classrooms/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include token if required
-          },
-        }
+      const classesResponse = await axios.get(
+        `http://localhost:3000/user-classes/${userId}`
       );
 
-      if (response.data.success) {
-        setClassrooms(response.data.classrooms);
-      } else {
+      if (!classesResponse.data.success) {
         setClassroomsError(
-          response.data.message || "Failed to fetch classrooms."
+          classesResponse.data.message || "Failed to fetch classes."
         );
+        setLoadingClassrooms(false);
+        return;
       }
+
+      const classes = classesResponse.data.classes || [];
+      let allClassrooms = [];
+
+      for (const cls of classes) {
+        try {
+          const classroomsResponse = await axios.get(
+            `http://localhost:3000/classes/${cls.id}/user-classrooms/${userId}`
+          );
+
+          if (!classroomsResponse.data.success) {
+            console.error(
+              `Failed to fetch classrooms for class ${cls.id}:`,
+              classroomsResponse.data.message
+            );
+            continue;
+          }
+
+          const classClassrooms = (
+            classroomsResponse.data.classrooms || []
+          ).map((room) => ({
+            ...room,
+            classId: cls.id,
+            className: cls.name,
+          }));
+
+          allClassrooms = allClassrooms.concat(classClassrooms);
+        } catch (error) {
+          console.error(
+            `Error fetching classrooms for class ${cls.id}:`,
+            error
+          );
+        }
+      }
+
+      setClassrooms(allClassrooms);
     } catch (error) {
       console.error("Error fetching classrooms:", error);
       setClassroomsError(
@@ -99,7 +130,6 @@ const Remote = () => {
     }
   };
 
-  // Effect to fetch classrooms if user is authenticated and on /remote?userID=...
   useEffect(() => {
     if (userId) {
       setIsAuthenticated(true);
@@ -107,22 +137,30 @@ const Remote = () => {
     }
   }, [userId]);
 
-  // Handle Selecting a Classroom for Remote Control
+  // Handle Selecting a Classroom
   const handleSelectClassroom = (classroom) => {
-    // Navigate to /remote?userID=...&classroomID=...
-    navigate(`/remote?userID=${userId}&classroomID=${classroom.id}`);
+    // Navigate including classID as well
+    navigate(
+      `/remote?userID=${userId}&classroomID=${classroom.id}&classID=${classroom.classId}`
+    );
   };
 
-  // Set up EventSource when classroomId is present
+  // Set up EventSource when we have classID and classroomId
   useEffect(() => {
-    if (!classroomId) return;
+    if (!classID || !classroomId) {
+      setErrorMessage("Missing classID or classroomID in URL parameters.");
+      return;
+    }
 
-    // Initialize EventSource
-    const newEventSource = new EventSource(
-      `http://localhost:3000/events?classroomId=${classroomId}&role=remote`
+    // Clear any existing error messages
+    setErrorMessage("");
+
+    const es = new EventSource(
+      `http://localhost:3000/events?classID=${classID}&classroomId=${classroomId}&role=classroom`
     );
+    setEventSource(es);
 
-    newEventSource.addEventListener("initialData", (event) => {
+    es.addEventListener("initialData", (event) => {
       const data = JSON.parse(event.data);
       setQueue(data.queue);
       setAttendanceList(data.attended);
@@ -130,59 +168,78 @@ const Remote = () => {
       setClassroomName(data.name);
     });
 
-    newEventSource.addEventListener("queueUpdate", (event) => {
+    es.addEventListener("queueUpdate", (event) => {
       const newQueue = JSON.parse(event.data);
       setQueue(newQueue);
     });
 
-    newEventSource.addEventListener("attendanceUpdate", (event) => {
+    es.addEventListener("attendanceUpdate", (event) => {
       const newAttendance = JSON.parse(event.data);
       setAttendanceList(newAttendance);
     });
 
-    newEventSource.addEventListener("studentSelected", (event) => {
+    es.addEventListener("studentSelected", (event) => {
       const student = JSON.parse(event.data);
       setSelectedStudent(student);
     });
 
-    newEventSource.addEventListener("queueReset", () => {
+    es.addEventListener("queueReset", () => {
       setSelectedStudent(null);
       setQueue([]);
     });
 
-    setEventSource(newEventSource);
-
-    // Cleanup on unmount or when classroomId changes
-    return () => {
-      newEventSource.close();
+    es.onerror = (error) => {
+      console.error("EventSource failed:", error);
+      setErrorMessage("Failed to connect to server for real-time updates.");
+      es.close();
     };
-  }, [classroomId]);
 
-  // Remote Control Functions
+    return () => {
+      es.close();
+    };
+  }, [classID, classroomId]);
+
   const selectStudent = (isColdCall = false) => {
+    if (!classID || !classroomId) {
+      setErrorMessage("Cannot select student without classID and classroomID.");
+      return;
+    }
+
     axios
-      .post("http://localhost:3000/selectStudent", {
-        classroomId,
-        isColdCall,
-      })
+      .post(
+        `http://localhost:3000/classes/${classID}/classrooms/${classroomId}/selectStudent`,
+        {
+          isColdCall,
+          userId, // make sure we use userId consistently
+        }
+      )
       .catch((error) => {
         console.error("Error selecting student:", error);
+        setErrorMessage("Failed to select student. Please try again.");
       });
   };
 
   const resetQueue = () => {
+    if (!classID || !classroomId) {
+      setErrorMessage("Cannot reset queue without classID and classroomID.");
+      return;
+    }
+
     axios
-      .post("http://localhost:3000/resetQueue", {
-        classroomId,
-      })
+      .post(
+        `http://localhost:3000/classes/${classID}/classrooms/${classroomId}/resetQueue`
+      )
       .catch((error) => {
         console.error("Error resetting queue:", error);
+        setErrorMessage("Failed to reset queue. Please try again.");
       });
   };
 
-  // Remote Control Interface
   const renderRemoteControl = () => (
     <div className="remote-content">
+      {(!classID || !classroomId) && (
+        <p className="remote-error-message">{errorMessage}</p>
+      )}
       <div className="remote-buttons">
         <button
           className="remote-btn remote-btn-select"
@@ -211,7 +268,6 @@ const Remote = () => {
     </div>
   );
 
-  // Classroom List Interface
   const renderClassroomList = () => (
     <div className="remote-classrooms-list">
       <h2>Your Classrooms</h2>
@@ -240,7 +296,6 @@ const Remote = () => {
     </div>
   );
 
-  // Sign-In Form Interface
   const renderSignInForm = () => (
     <div className="remote-sign-in-container">
       <h2>Sign In to Manage Your Classrooms</h2>
@@ -271,7 +326,6 @@ const Remote = () => {
 
   return (
     <div className="remote-container">
-      {/* Navigation Bar */}
       {classroomId && (
         <nav className="remote-nav">
           <span className="remote-title">
@@ -283,15 +337,16 @@ const Remote = () => {
         </nav>
       )}
 
-      {/* Conditional Rendering Based on Authentication and Query Parameters */}
       {!isAuthenticated && !userId ? (
         renderSignInForm()
       ) : isAuthenticated && userId && !classroomId ? (
         renderClassroomList()
-      ) : isAuthenticated && userId && classroomId ? (
+      ) : isAuthenticated && userId && classroomId && classID ? (
         renderRemoteControl()
       ) : (
-        <p className="remote-info-message">Invalid URL parameters.</p>
+        <p className="remote-info-message">
+          {errorMessage || "Invalid URL parameters."}
+        </p>
       )}
     </div>
   );

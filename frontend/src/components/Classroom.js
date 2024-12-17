@@ -1,6 +1,7 @@
+// Classroom.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import "../css/Classroom.css";
 import { FaHandPointer, FaRandom, FaRedo } from "react-icons/fa"; // Icons for buttons
 
@@ -8,17 +9,30 @@ const Classroom = () => {
   const { classroomId } = useParams();
   const location = useLocation();
 
+  // Extract query parameters
+  const params = new URLSearchParams(location.search);
+  const classID = params.get("classID");
+  const userID = params.get("userID");
+
+  // State variables
   const [queue, setQueue] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [attendanceList, setAttendanceList] = useState([]);
   const [classroomName, setClassroomName] = useState(
     location.state?.classroomName || ""
   );
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    // Set up EventSource
+    // Validate required parameters
+    if (!classID || !classroomId) {
+      setErrorMessage("Missing classID or classroomId in URL parameters.");
+      return;
+    }
+
+    // Set up EventSource with all required query parameters
     const eventSource = new EventSource(
-      `http://localhost:3000/events?classroomId=${classroomId}&role=classroom`
+      `http://localhost:3000/events?classID=${classID}&classroomId=${classroomId}&role=classroom`
     );
 
     eventSource.addEventListener("initialData", (event) => {
@@ -49,22 +63,53 @@ const Classroom = () => {
       setQueue([]);
     });
 
+    eventSource.onerror = (error) => {
+      console.error("EventSource failed:", error);
+      setErrorMessage("Failed to connect to server for real-time updates.");
+      eventSource.close();
+    };
+
     return () => {
       eventSource.close();
     };
-  }, [classroomId]);
+  }, [classID, classroomId]);
 
+  // Updated selectStudent function to match backend route
   const selectStudent = (isColdCall = false) => {
-    axios.post("http://localhost:3000/selectStudent", {
-      classroomId,
-      isColdCall,
-    });
+    if (!classID || !classroomId) {
+      setErrorMessage("Cannot select student without classID and classroomId.");
+      return;
+    }
+
+    axios
+      .post(
+        `http://localhost:3000/classes/${classID}/classrooms/${classroomId}/selectStudent`,
+        {
+          isColdCall,
+          userID, // Optionally include userID if needed by backend
+        }
+      )
+      .catch((error) => {
+        console.error("Error selecting student:", error);
+        setErrorMessage("Failed to select student. Please try again.");
+      });
   };
 
+  // Updated resetQueue function to match backend route
   const resetQueue = () => {
-    axios.post("http://localhost:3000/resetQueue", {
-      classroomId,
-    });
+    if (!classID || !classroomId) {
+      setErrorMessage("Cannot reset queue without classID and classroomId.");
+      return;
+    }
+
+    axios
+      .post(
+        `http://localhost:3000/classes/${classID}/classrooms/${classroomId}/resetQueue`
+      )
+      .catch((error) => {
+        console.error("Error resetting queue:", error);
+        setErrorMessage("Failed to reset queue. Please try again.");
+      });
   };
 
   return (

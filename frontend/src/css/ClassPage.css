@@ -1,0 +1,474 @@
+/* ClassPage.css */
+
+/* Define Color Variables */
+:root {
+  --color-primary: #093152;
+  --color-secondary: #007cb4;
+  --color-tertiary: #c2deea;
+  --color-light-grey: #f1f3f5;
+  --color-light: #f8f9fa;
+  --color-dark: #333333;
+  --color-border: #ccc;
+  --color-error-bg: #f8d7da;
+  --color-error-text: #721c24;
+  --color-success-bg: #d4edda;
+  --color-success-text: #155724;
+  --color-modal-overlay: rgba(0, 0, 0, 0.4);
+  --transition-speed: 0.2s;
+}
+
+/* General Container Styling */
+.classpage-container {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-size: 13px; /* Smaller and more minimalistic font size */
+  background-color: var(--color-light-grey);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Navigation Bar Styling */
+.classpage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 6px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Back Button */
+.classpage-back-button {
+  background: transparent;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color var(--transition-speed) ease;
+}
+
+.classpage-back-button:hover {
+  color: var(--color-tertiary);
+}
+
+.classpage-back-icon {
+  font-size: 16px;
+  margin-right: 6px;
+}
+
+.classpage-back-text {
+  font-size: 14px;
+}
+
+/* Classpage Title */
+.classpage-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+/* Dashboard Actions */
+.classpage-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Edit Button */
+.classpage-button-edit {
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  border-radius: 18px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color var(--transition-speed) ease,
+    color var(--transition-speed) ease,
+    border-color var(--transition-speed) ease;
+}
+
+.classpage-button-edit:hover {
+  background-color: white;
+  color: var(--color-primary);
+}
+
+.classpage-button-edit.active {
+  background-color: white;
+  color: var(--color-primary);
+}
+
+.classpage-edit-icon {
+  font-size: 14px;
+}
+
+/* Main Content */
+.classpage-main {
+  margin-top: 20px;
+}
+
+/* Sections */
+.classpage-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 10px;
+}
+
+/* Classrooms Section */
+.classpage-classrooms-section {
+  margin-bottom: 30px;
+}
+
+.classpage-classrooms-section h3 {
+  color: var(--color-primary);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.classpage-classrooms-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.classpage-classroom-card {
+  background-color: var(--color-light);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease-in-out,
+    background-color var(--transition-speed) ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90px; /* Adjust height as needed */
+}
+
+.classpage-classroom-card:hover {
+  transform: scale(1.02);
+  background-color: var(--color-tertiary);
+}
+
+.classpage-classroom-name {
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Delete Button */
+.classpage-delete-button {
+  background: transparent;
+  border: none;
+  color: var(--color-error);
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 0 8px;
+  transition: color var(--transition-speed) ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.classpage-delete-button:hover {
+  color: #a00; /* A darker shade of red */
+}
+
+/* Create Classroom Section */
+.classpage-create-classroom-section {
+  margin-top: 30px;
+}
+
+.classpage-create-classroom-section h3 {
+  color: var(--color-primary);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.classpage-create-classroom-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.classpage-create-classroom-form .classpage-input-field {
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.classpage-create-classroom-form .classpage-button-primary {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 6px 14px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.classpage-create-classroom-form .classpage-button-primary:hover {
+  background-color: #061e3b;
+}
+
+.classpage-create-classroom-form .classpage-button-primary:disabled {
+  background-color: var(--color-border);
+  cursor: not-allowed;
+}
+
+/* Alert Messages */
+.classpage-alert-message {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.classpage-alert-error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error-text);
+}
+
+.classpage-alert-success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+/* Loading Spinner */
+.classpage-spinner {
+  border: 3px solid var(--color-light);
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  animation: spin 1s linear infinite;
+  margin: 15px auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* No Classrooms Message */
+.classpage-no-classrooms-message {
+  font-size: 13px;
+  color: var(--color-light-text);
+  text-align: center;
+  margin-top: 15px;
+}
+
+/* Confirmation Modal Styles */
+.classpage-modal-overlay {
+  background-color: var(--color-modal-overlay);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.classpage-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  background: #fff;
+  padding: 20px 15px;
+  transform: translate(-50%, -50%);
+  border-radius: 6px;
+  width: 280px;
+  max-width: 90%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -55%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.classpage-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 15px;
+  color: var(--color-text);
+}
+
+.classpage-modal-message {
+  font-size: 13px;
+  color: var(--color-text);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.classpage-modal-close-icon {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--color-light-text);
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.classpage-modal-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Buttons within Modal */
+.classpage-button-danger {
+  background-color: var(--color-error);
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.classpage-button-danger:hover {
+  background-color: #a00;
+}
+
+.classpage-button-secondary {
+  background-color: #f7f7f7;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.classpage-button-secondary:hover {
+  background-color: #ebebeb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .classpage-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .classpage-title {
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .classpage-classrooms-list {
+    grid-template-columns: 1fr;
+  }
+
+  .classpage-create-classroom-form {
+    flex-direction: column;
+  }
+
+  .classpage-create-classroom-form .classpage-button-primary {
+    width: 100%;
+  }
+
+  .classpage-button-edit {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .classpage-edit-icon {
+    font-size: 13px;
+  }
+
+  .classpage-back-button {
+    font-size: 13px;
+  }
+
+  .classpage-back-icon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .classpage-container {
+    padding: 15px;
+  }
+
+  .classpage-header {
+    padding: 8px 15px;
+  }
+
+  .classpage-title {
+    font-size: 13px;
+  }
+
+  .classpage-back-button {
+    font-size: 12px;
+  }
+
+  .classpage-back-icon {
+    font-size: 12px;
+  }
+
+  .classpage-classrooms-section h3 {
+    font-size: 15px;
+  }
+
+  .classpage-classroom-card {
+    height: 80px;
+    padding: 12px;
+  }
+
+  .classpage-classroom-name {
+    font-size: 13px;
+  }
+
+  .classpage-delete-button {
+    font-size: 0.9rem;
+    padding: 0 4px;
+  }
+
+  .classpage-button-edit {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .classpage-edit-icon {
+    font-size: 12px;
+  }
+}
