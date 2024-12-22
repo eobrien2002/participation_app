@@ -30,15 +30,58 @@ const Dashboard = () => {
   // State for Edit Mode
   const [editMode, setEditMode] = useState(false);
 
-  // Fetch user classes on component mount or when userID changes
+  // **New State: User Role**
+  const [role, setRole] = useState(null); // 'teacher' or 'student'
+  const [studentId, setStudentId] = useState(null); // Student ID if role is 'student'
+  const [name, setName] = useState(""); // User's name
+
+  // Fetch user role on component mount or when userID changes
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/get-role/${userID}`
+        );
+        if (response.data.success) {
+          setRole(response.data.role);
+          setName(response.data.name);
+          if (response.data.role === "student") {
+            setStudentId(response.data.studentId);
+          }
+        } else {
+          setErrorMessage(response.data.message || "Failed to get user role.");
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        setErrorMessage("Failed to fetch user role.");
+      }
+    };
+
+    if (userID) {
+      fetchUserRole();
+    }
+  }, [userID]);
+
+  // **Modified Fetch Classes: Conditionally call API based on role**
   useEffect(() => {
     const fetchClasses = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
-          `http://localhost:3000/user-classes/${userID}`
-        );
-        console.log("Fetch Classes Response:", response.data); // Debugging
+        let response;
+        if (role === "teacher") {
+          response = await axios.get(
+            `http://localhost:3000/user-classes/${userID}`
+          );
+        } else if (role === "student") {
+          response = await axios.get(
+            `http://localhost:3000/user-classes-as-student/${userID}`
+          );
+        } else {
+          setErrorMessage("Invalid user role.");
+          setLoading(false);
+          return;
+        }
+
         if (response.data.success) {
           setClasses(response.data.classes);
         } else {
@@ -52,10 +95,10 @@ const Dashboard = () => {
       }
     };
 
-    if (userID) {
+    if (userID && role) {
       fetchClasses();
     }
-  }, [userID]);
+  }, [userID, role]);
 
   // Handle creating a new class
   const handleCreateClass = async (e) => {
@@ -104,12 +147,15 @@ const Dashboard = () => {
     }
   };
 
-  // Navigate to class detail page
+  // Navigate to class detail page with role in URL params
   const handleClassClick = (classID) => {
+    const selectedClass = classes.find((cls) => cls.id === classID);
     navigate(
-      `/dashboard/class?classID=${classID}&userID=${userID}&className=${
-        classes.find((cls) => cls.id === classID).name
-      }`
+      `/dashboard/class?classID=${classID}&userID=${userID}&className=${encodeURIComponent(
+        selectedClass.name
+      )}&role=${role}&studentId=${studentId}&studentName=${encodeURIComponent(
+        name
+      )}`
     );
   };
 
@@ -181,16 +227,19 @@ const Dashboard = () => {
           <FaHome className="logo-icon" />
         </button>
         <div className="brand-name">Quotient Dashboard</div>
-        <div className="dashboard-actions">
-          <button
-            className={`button-edit ${editMode ? "active" : ""}`}
-            onClick={toggleEditMode}
-            aria-label={editMode ? "Exit Edit Mode" : "Enter Edit Mode"}
-          >
-            <FaEdit className="edit-icon" />
-            {editMode ? "Done" : "Edit"}
-          </button>
-        </div>
+        {/* **Conditionally Render Edit Button Based on Role** */}
+        {role === "teacher" && (
+          <div className="dashboard-actions">
+            <button
+              className={`button-edit ${editMode ? "active" : ""}`}
+              onClick={toggleEditMode}
+              aria-label={editMode ? "Exit Edit Mode" : "Enter Edit Mode"}
+            >
+              <FaEdit className="edit-icon" />
+              {editMode ? "Done" : "Edit"}
+            </button>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}
@@ -219,7 +268,7 @@ const Dashboard = () => {
                 >
                   <span className="class-name">{cls.name}</span>
                   {/* Conditionally render Delete Button based on editMode */}
-                  {editMode && (
+                  {editMode && role === "teacher" && (
                     <button
                       className="delete-button"
                       onClick={(e) => {
@@ -237,8 +286,8 @@ const Dashboard = () => {
           )}
         </section>
 
-        {/* Create Class Section - Only Visible in Edit Mode */}
-        {editMode && (
+        {/* Create Class Section - Only Visible in Edit Mode and for Teachers */}
+        {editMode && role === "teacher" && (
           <section className="create-class-section">
             <h2 className="section-title">Create a New Class</h2>
             <form className="create-class-form" onSubmit={handleCreateClass}>

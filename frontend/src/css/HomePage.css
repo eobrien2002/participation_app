@@ -27,6 +27,15 @@
   color: var(--color-primary);
 }
 
+.header-actions .button-link {
+  background: none;
+  border: none;
+  color: var(--color-link);
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
 /* Hero Section */
 .hero-section {
   display: flex;
@@ -47,22 +56,7 @@
   color: var(--color-text);
   margin-bottom: 15px;
 }
-.forgot-password {
-  text-align: center;
-  margin-top: 10px; /* Optional: Adjust spacing as needed */
-}
 
-.forgot-password .link-button {
-  display: inline-block; /* Ensure the button behaves like an inline element */
-  background: none;
-  border: none;
-  color: var(--color-link);
-  font-size: 12px;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-  /* Center alignment is handled by the parent .forgot-password */
-}
 .hero-subtitle {
   font-size: 16px;
   color: var(--color-light-text);
@@ -150,6 +144,169 @@
 .footer-text {
   font-size: 12px;
   color: var(--color-light-text);
+}
+
+/* Modal Styles */
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  background: var(--color-bg);
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-close-icon {
+  background: none;
+  border: none;
+  font-size: 24px;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+}
+
+.modal-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.role-selection {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.role-label {
+  margin-right: 10px;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.dropdown-select {
+  flex: 1;
+  padding: 8px 10px; /* Reduced padding for smaller size */
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 13px; /* Smaller font size */
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.error-message {
+  color: var(--color-error);
+  font-size: 13px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.success-message {
+  color: var(--color-success);
+  font-size: 13px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.info-message {
+  color: var(--color-info);
+  font-size: 13px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.modal-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button-primary {
+  padding: 10px 20px;
+  background-color: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.button-secondary {
+  padding: 10px 20px;
+  background-color: var(--color-secondary);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.button-link-modal {
+  background: none;
+  border: none;
+  color: var(--color-link);
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--color-link);
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+/* Forgot Password Section */
+.forgot-password {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.forgot-password .link-button {
+  display: inline-block;
+  background: none;
+  border: none;
+  color: var(--color-link);
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* Success Message Styling */
+.success-message {
+  color: green; /* Adjust the color as per your theme */
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 /* Responsive */

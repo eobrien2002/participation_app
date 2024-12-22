@@ -18,4 +18,7 @@ router.post("/request-password-reset", authController.requestPasswordReset);
 // Reset Password
 router.post("/api/reset-password", authController.resetPassword);
 
+// Get user role
+router.get("/api/get-role/:userID", authController.getUserRole);
+
 module.exports = router;

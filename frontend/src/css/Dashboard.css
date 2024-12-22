@@ -379,12 +379,6 @@
   cursor: pointer;
 }
 
-.modal-button-group {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
 /* Buttons within Modal */
 .button-danger {
   background-color: var(--color-error);

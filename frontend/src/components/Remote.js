@@ -90,7 +90,7 @@ const Remote = () => {
       for (const cls of classes) {
         try {
           const classroomsResponse = await axios.get(
-            `http://localhost:3000/classes/${cls.id}/user-classrooms/${userId}`
+            `http://localhost:3000/user-classrooms/${cls.id}/${userId}`
           );
 
           if (!classroomsResponse.data.success) {
@@ -199,19 +199,27 @@ const Remote = () => {
     };
   }, [classID, classroomId]);
 
-  const selectStudent = (isColdCall = false) => {
+  /**
+   * Modified selectStudent function to accept an optional 'section' parameter.
+   * @param {boolean} isColdCall - Indicates if it's a cold call.
+   * @param {string|null} section - Section name ("Section A", "Section B", "Section C") or null.
+   */
+  const selectStudentHandler = (isColdCall = false, section = null) => {
     if (!classID || !classroomId) {
       setErrorMessage("Cannot select student without classID and classroomID.");
       return;
     }
 
+    // Prepare the request payload
+    const payload = {
+      isColdCall,
+      section, // include section parameter
+    };
+
     axios
       .post(
         `http://localhost:3000/classes/${classID}/classrooms/${classroomId}/selectStudent`,
-        {
-          isColdCall,
-          userId, // make sure we use userId consistently
-        }
+        payload
       )
       .catch((error) => {
         console.error("Error selecting student:", error);
@@ -241,18 +249,47 @@ const Remote = () => {
         <p className="remote-error-message">{errorMessage}</p>
       )}
       <div className="remote-buttons">
+        {/* Existing Select Student Button */}
         <button
           className="remote-btn remote-btn-select"
-          onClick={() => selectStudent(false)}
+          onClick={() => selectStudentHandler(false, null)}
         >
-          <FaHandPointer className="remote-icon" /> Select Student
+          <FaHandPointer className="remote-icon" /> Select Any Student
         </button>
+
+        {/* Existing Cold Call Button */}
         <button
           className="remote-btn remote-btn-cold-call"
-          onClick={() => selectStudent(true)}
+          onClick={() => selectStudentHandler(true, null)}
         >
-          <FaRandom className="remote-icon" /> Cold Call
+          <FaRandom className="remote-icon" /> Cold Call Any Student
         </button>
+
+        {/* New Button: Select Section A Student */}
+        <button
+          className="remote-btn remote-btn-section-a"
+          onClick={() => selectStudentHandler(false, "Section A")}
+        >
+          <FaHandPointer className="remote-icon" /> Select Section A Student
+        </button>
+
+        {/* New Button: Select Section B Student */}
+        <button
+          className="remote-btn remote-btn-section-b"
+          onClick={() => selectStudentHandler(false, "Section B")}
+        >
+          <FaHandPointer className="remote-icon" /> Select Section B Student
+        </button>
+
+        {/* New Button: Select Section C Student */}
+        <button
+          className="remote-btn remote-btn-section-c"
+          onClick={() => selectStudentHandler(false, "Section C")}
+        >
+          <FaHandPointer className="remote-icon" /> Select Section C Student
+        </button>
+
+        {/* Existing Reset Queue Button */}
         <button className="remote-btn remote-btn-reset" onClick={resetQueue}>
           <FaRedo className="remote-icon" /> Reset Queue
         </button>

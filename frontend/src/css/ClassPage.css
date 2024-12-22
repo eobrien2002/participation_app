@@ -111,12 +111,35 @@
   font-size: 14px;
 }
 
+/* Invite Button */
+.classpage-button-invite {
+  background-color: var(--color-secondary);
+  color: #fff;
+  padding: 6px 14px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.classpage-button-invite:hover {
+  background-color: #006190; /* Slightly darker shade of secondary */
+}
+
+.classpage-invite-icon {
+  font-size: 14px;
+}
+
 /* Main Content */
 .classpage-main {
   margin-top: 20px;
 }
 
-/* Sections */
+/* Section Titles */
 .classpage-section-title {
   font-size: 16px;
   font-weight: 600;
@@ -471,4 +494,131 @@
   .classpage-edit-icon {
     font-size: 12px;
   }
+}
+
+/* Students Section */
+.classpage-students-section {
+  margin-top: 30px;
+}
+
+.classpage-students-section h3 {
+  color: var(--color-primary);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.classpage-students-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.classpage-student-card {
+  background-color: var(--color-light);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  transition: transform var(--transition-speed) ease-in-out,
+    background-color var(--transition-speed) ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px; /* Adjust height as needed */
+}
+
+.classpage-student-card:hover {
+  transform: scale(1.02);
+  background-color: var(--color-tertiary);
+}
+
+.classpage-student-name {
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.classpage-no-students-message {
+  font-size: 13px;
+  color: var(--color-light-text);
+  text-align: center;
+  margin-top: 15px;
+}
+
+.classpage-error-message {
+  font-size: 13px;
+  color: var(--color-error-text);
+  text-align: center;
+  margin-top: 15px;
+}
+
+/* ---------------------------------------- */
+/* Drag & Drop Styling for Student Sections */
+/* ---------------------------------------- */
+.classpage-dnd-container {
+  margin-top: 20px;
+}
+
+.classpage-dnd-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto; /* Allows horizontal scroll if many columns */
+  padding-bottom: 10px;
+}
+
+/* Additional row/section for Unassigned */
+.classpage-dnd-unassigned {
+  margin-top: 20px; /* Adds space below the first row */
+  display: flex;
+  justify-content: flex-start; /* or center, depending on preference */
+  overflow-x: auto;
+}
+
+.classpage-dnd-column {
+  background-color: var(--color-light);
+  border: 2px dashed var(--color-border);
+  border-radius: 6px;
+  padding: 10px;
+  min-width: 220px;
+  flex: 1;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.classpage-dnd-column h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}
+
+.classpage-dnd-column-over {
+  background-color: var(--color-tertiary);
+}
+
+.classpage-dnd-item {
+  background-color: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--color-dark);
+  cursor: move;
+  transition: transform var(--transition-speed),
+    box-shadow var(--transition-speed);
+}
+
+.classpage-dnd-item:hover {
+  transform: scale(1.01);
+}
+
+.classpage-dnd-item-dragging {
+  background-color: var(--color-light-grey);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
 }

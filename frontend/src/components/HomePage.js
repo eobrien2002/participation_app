@@ -16,6 +16,7 @@ const HomePage = () => {
   const [studentName, setStudentName] = useState("");
   const [studentId, setStudentId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,12 +30,26 @@ const HomePage = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [resetMessage, setResetMessage] = useState("");
 
+  // Updated State Variable for Role Selection
+  const [role, setRole] = useState("student"); // default to student
+
+  // New state for inviteClassID
+  const [inviteClassID, setInviteClassID] = useState(null);
+
+  // New State Variable for Name
+  const [name, setName] = useState("");
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
+    const invitedClassID = params.get("inviteClassID");
 
     if (token) {
       verifyEmail(token);
+    }
+
+    if (invitedClassID) {
+      setInviteClassID(invitedClassID);
     }
   }, [location.search]);
 
@@ -43,7 +58,7 @@ const HomePage = () => {
       const response = await axios.get(
         `http://localhost:3000/verify-email?token=${token}`
       );
-      setErrorMessage(response.data.message);
+      setSuccessMessage(response.data.message);
     } catch (error) {
       console.error("Error verifying email:", error);
       setErrorMessage(
@@ -56,17 +71,17 @@ const HomePage = () => {
   const createClassroom = async () => {
     if (!user) {
       setErrorMessage("You need to sign in to create a classroom.");
+      setRole("teacher");
       setShowSignInModal(true);
       return;
     }
-    // Instead of creating a classroom here, the user will go to the dashboard to create classes.
-    // Navigate to the dashboard with the userID.
-    navigate(`/dashboard?userID=${user.id}`);
+    navigate(`/dashboard?userID=${user.id}&role=${user.role}`);
   };
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     setErrorMessage("");
+    setSuccessMessage("");
 
     try {
       const response = await axios.post("http://localhost:3000/login", {
@@ -76,7 +91,17 @@ const HomePage = () => {
       if (response.data.success) {
         setUser(response.data.user);
         setShowSignInModal(false);
-        // On successful login, navigate to the dashboard
+
+        // If inviteClassID is present, add this user to the class
+        if (inviteClassID) {
+          await axios.post(
+            `http://localhost:3000/add-student/${inviteClassID}`,
+            {
+              userID: response.data.user.id,
+            }
+          );
+        }
+
         navigate(`/dashboard?userID=${response.data.user.id}`);
       } else {
         setErrorMessage(response.data.message);
@@ -93,17 +118,54 @@ const HomePage = () => {
   const handleRegistration = async (e) => {
     e.preventDefault();
     setErrorMessage("");
+    setSuccessMessage("");
+
+    if (role === "student" && !studentId.trim()) {
+      setErrorMessage("Please provide your Student ID.");
+      return;
+    }
+
+    // Include Name in Validation if Needed
+    if (!name.trim()) {
+      setErrorMessage("Please provide your Name.");
+      return;
+    }
 
     try {
-      const response = await axios.post("http://localhost:3000/register", {
+      const payload = {
         email,
         password,
-      });
+        role,
+        name, // Include Name in Payload
+        ...(role === "student" && { studentId }),
+      };
+
+      const response = await axios.post(
+        "http://localhost:3000/register",
+        payload
+      );
       if (response.data.success) {
-        setShowSignInModal(false);
-        setErrorMessage(
+        // Assume the server returns the created user in response.data.user
+        const newUser = response.data.user;
+        // **Do NOT close the modal automatically on registration**
+        // setShowSignInModal(false);
+
+        setSuccessMessage(
           "Registration successful! Please check your email to verify your account."
         );
+
+        // Reset Name Field After Successful Registration
+        setName("");
+
+        // If inviteClassID is present, add this user to the class
+        if (inviteClassID && newUser && newUser.id) {
+          await axios.post(
+            `http://localhost:3000/classes/${inviteClassID}/add-student`,
+            {
+              userID: newUser.id,
+            }
+          );
+        }
       } else {
         setErrorMessage(response.data.message);
       }
@@ -129,43 +191,26 @@ const HomePage = () => {
     setErrorMessage("");
   };
 
-  const joinClassroom = async () => {
-    if (!joinClassroomId || !studentName || !studentId) {
-      setErrorMessage("Please fill in all fields");
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/verify-classroom",
-        {
-          classroomId: joinClassroomId,
-        }
-      );
-
-      const { className, classroomName, classID } = response.data;
-
-      navigate(`/student/${joinClassroomId}`, {
-        state: { className, classroomName, classID, studentName, studentId },
-      });
-      closeModal();
-    } catch (error) {
-      setErrorMessage("Classroom ID not found. Please enter a valid ID.");
-    }
-  };
-
   const handleCloseSignInModal = () => {
     setShowSignInModal(false);
     setErrorMessage("");
+    setSuccessMessage("");
     setEmail("");
     setPassword("");
+    setRole("student"); // Reset role
+    setStudentId("");
+    setName(""); // Reset Name Field
   };
 
   const toggleSignInSignUp = () => {
     setIsSignIn(!isSignIn);
     setErrorMessage("");
+    setSuccessMessage("");
     setEmail("");
     setPassword("");
+    setRole("student");
+    setStudentId("");
+    setName(""); // Reset Name Field
   };
 
   const handleRequestPasswordReset = async (e) => {
@@ -197,7 +242,10 @@ const HomePage = () => {
         <div className="header-actions">
           <button
             className="button-link"
-            onClick={() => setShowSignInModal(true)}
+            onClick={() => {
+              setShowSignInModal(true);
+              setRole("student");
+            }}
           >
             Sign Up / Log In
           </button>
@@ -210,7 +258,13 @@ const HomePage = () => {
           <p className="hero-subtitle">
             Seamlessly connect, collaborate, and engage.
           </p>
-          <button className="button-primary" onClick={openModal}>
+          <button
+            className="button-primary"
+            onClick={() => {
+              setShowSignInModal(true);
+              setRole("student");
+            }}
+          >
             Join a Classroom
           </button>
         </div>
@@ -223,7 +277,7 @@ const HomePage = () => {
             Empower your students with a streamlined, intuitive experience.
           </p>
           <button className="button-secondary" onClick={createClassroom}>
-            Go to Dashboard
+            Create Classroom
           </button>
         </div>
       </section>
@@ -251,46 +305,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Join Classroom Modal */}
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        className="modal"
-        overlayClassName="modal-overlay"
-      >
-        <button className="modal-close-icon" onClick={closeModal}>
-          &times;
-        </button>
-        <h2 className="modal-title">Join Classroom</h2>
-        <input
-          type="text"
-          value={joinClassroomId}
-          onChange={(e) => setJoinClassroomId(e.target.value)}
-          placeholder="Classroom ID"
-          className="input-field"
-        />
-        <input
-          type="text"
-          value={studentName}
-          onChange={(e) => setStudentName(e.target.value)}
-          placeholder="Your Name"
-          className="input-field"
-        />
-        <input
-          type="text"
-          value={studentId}
-          onChange={(e) => setStudentId(e.target.value)}
-          placeholder="Student ID"
-          className="input-field"
-        />
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
-        <div className="modal-button-group">
-          <button className="button-primary" onClick={joinClassroom}>
-            Join
-          </button>
-        </div>
-      </Modal>
-
       {/* Sign In / Sign Up Modal */}
       <Modal
         isOpen={showSignInModal}
@@ -305,6 +319,18 @@ const HomePage = () => {
           {isSignIn ? "Sign In" : "Create Account"}
         </h2>
         <form onSubmit={isSignIn ? handleSignIn : handleRegistration}>
+          {/* Name Input Field - Visible Only During Registration */}
+          {!isSignIn && (
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your Name"
+              className="input-field"
+              required
+            />
+          )}
+
           <input
             type="email"
             value={email}
@@ -321,8 +347,43 @@ const HomePage = () => {
             className="input-field"
             required
           />
+
+          {/* Student ID Field - shown only if role is student and user is registering */}
+          {!isSignIn && role === "student" && (
+            <input
+              type="text"
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+              placeholder="Student ID"
+              className="input-field"
+              required={role === "student"}
+            />
+          )}
+
+          {/* Role Selection Dropdown for Registration */}
+          {!isSignIn && (
+            <div className="role-selection">
+              <select
+                id="role-dropdown"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="dropdown-select"
+                required
+              >
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+              </select>
+            </div>
+          )}
+
+          {/* Display Success Message if Available */}
+          {successMessage && (
+            <p className="success-message">{successMessage}</p>
+          )}
+
+          {/* Display Error Message if Available */}
           {errorMessage && <p className="error-message">{errorMessage}</p>}
-          {resetMessage && <p className="info-message">{resetMessage}</p>}
+
           <div className="modal-button-group">
             <button type="submit" className="button-primary">
               {isSignIn ? "Sign In" : "Create Account"}

@@ -1,5 +1,8 @@
 // controllers/authController.js
 const bcrypt = require("bcrypt");
+const fs = require("fs");
+const path = require("path");
+
 const { v4: uuidv4 } = require("uuid");
 const { db, admin } = require("../config/firebase");
 const {
@@ -9,15 +12,52 @@ const {
 
 const usersCollection = db.collection("users");
 
+// Auth Teachers
+let authorizedTeachers = [];
+
+const loadAuthorizedTeachers = () => {
+  const filePath = path.join(__dirname, "../teachers.json");
+  try {
+    const data = fs.readFileSync(filePath, "utf8");
+    const json = JSON.parse(data);
+    authorizedTeachers = json.teachers.map((email) => email.toLowerCase());
+    console.log("Authorized teachers loaded successfully.");
+  } catch (error) {
+    console.error("Error loading authorized teachers:", error);
+    authorizedTeachers = [];
+  }
+};
+
+loadAuthorizedTeachers();
+
 // Register a new user
 const register = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role, studentId, name } = req.body;
 
   // Basic validation
-  if (!email || !password) {
+  if (!email || !password || !role || !name) {
     return res
       .status(400)
-      .json({ success: false, message: "Missing email or password." });
+      .json({ success: false, message: "Missing email, password, or role." });
+  }
+
+  // If role is student, studentId is required
+  if (role === "student" && (!studentId || !studentId.trim())) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing Student ID for student role.",
+    });
+  }
+
+  // If role is teacher, verify email is authorized
+  if (role === "teacher") {
+    const normalizedEmail = email.toLowerCase();
+    if (!authorizedTeachers.includes(normalizedEmail)) {
+      return res.status(403).json({
+        success: false,
+        message: "This email is not authorized to register as a teacher.",
+      });
+    }
   }
 
   try {
@@ -32,6 +72,19 @@ const register = async (req, res) => {
       });
     }
 
+    // If role is student, check if Student ID is unique
+    if (role === "student") {
+      const studentIdSnapshot = await usersCollection
+        .where("studentId", "==", studentId)
+        .get();
+      if (!studentIdSnapshot.empty) {
+        return res.status(400).json({
+          success: false,
+          message: "This Student ID is already in use.",
+        });
+      }
+    }
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -43,15 +96,24 @@ const register = async (req, res) => {
 
     // Create new user
     const userId = uuidv4();
-    await usersCollection.doc(userId).set({
+    const newUser = {
       id: userId,
       email,
       password: hashedPassword,
+      name: name,
+      role, // Add role
       isVerified: false,
       verificationToken,
       verificationTokenExpiry,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    };
+
+    // Add studentId if role is student
+    if (role === "student") {
+      newUser.studentId = studentId.trim();
+    }
+
+    await usersCollection.doc(userId).set(newUser);
 
     // Send verification email
     await sendVerificationEmail(email, verificationToken);
@@ -60,7 +122,7 @@ const register = async (req, res) => {
       success: true,
       message:
         "User registered successfully. Please check your email to verify your account.",
-      user: { id: userId, email },
+      user: { id: userId, email, role: newUser.role },
     });
   } catch (error) {
     console.error("Error registering user:", error);
@@ -283,10 +345,50 @@ const resetPassword = async (req, res) => {
   }
 };
 
+// Get user role
+const getUserRole = async (req, res) => {
+  const { userID } = req.params;
+
+  if (!userID) {
+    return res.status(400).json({ success: false, message: "Missing userID." });
+  }
+
+  try {
+    const userDoc = await usersCollection.doc(userID).get();
+
+    if (!userDoc.exists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    const userData = userDoc.data();
+
+    if (userData.role === "teacher") {
+      return res
+        .status(200)
+        .json({ success: true, role: userData.role, name: userData.name });
+    } else if (userData.role === "student") {
+      return res.status(200).json({
+        success: true,
+        role: userData.role,
+        studentId: userData.studentId,
+        name: userData.name,
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error." });
+  }
+};
+
 module.exports = {
   register,
   verifyEmail,
   login,
   requestPasswordReset,
   resetPassword,
+  getUserRole,
 };

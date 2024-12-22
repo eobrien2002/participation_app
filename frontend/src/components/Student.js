@@ -6,7 +6,7 @@ import "../css/Student.css";
 const Student = () => {
   const { classroomId } = useParams();
   const location = useLocation();
-  const { className, classroomName, classID, studentName, studentId } =
+  const { className, classroomName, classID, studentId, studentName, userID } =
     location.state;
 
   const [participationCount, setParticipationCount] = useState(0);
@@ -17,12 +17,7 @@ const Student = () => {
     // Log attendance with new route structure
     axios.post(
       `http://localhost:3000/classes/${classID}/classrooms/${classroomId}/log-attendance`,
-      {
-        classroomId,
-        studentName,
-        studentId,
-        classID,
-      }
+      { userID, classroomId, studentName, studentId, classID }
     );
 
     // Set up EventSource with classID and classroomId as query params
@@ -32,20 +27,20 @@ const Student = () => {
 
     eventSource.addEventListener("initialData", (event) => {
       const data = JSON.parse(event.data);
-      setIsHandRaised(data.queue.some((student) => student.id === studentId));
-      setParticipationCount(data.participation[studentId] || 0);
+      setIsHandRaised(data.queue.some((student) => student.userID === userID));
+      setParticipationCount(data.participation[userID] || 0);
     });
 
     eventSource.addEventListener("participationUpdate", (event) => {
       const { student, count } = JSON.parse(event.data);
-      if (student.id === studentId) {
+      if (student.userID === userID) {
         setParticipationCount(count);
       }
     });
 
     eventSource.addEventListener("studentSelected", (event) => {
       const selectedStudent = JSON.parse(event.data);
-      if (selectedStudent.id === studentId) {
+      if (selectedStudent.userID === userID) {
         setIsSelected(true);
         setIsHandRaised(false);
       }
@@ -58,12 +53,13 @@ const Student = () => {
     return () => {
       eventSource.close();
     };
-  }, [classroomId, studentId, studentName, classID]);
+  }, [userID, classroomId, studentId, studentName, classID]);
 
   const raiseHand = () => {
     axios.post(
       `http://localhost:3000/classes/${classID}/classrooms/${classroomId}/raiseHand`,
       {
+        userID,
         studentId,
         classroomId,
         studentName,
@@ -77,6 +73,7 @@ const Student = () => {
     axios.post(
       `http://localhost:3000/classes/${classID}/classrooms/${classroomId}/lowerHand`,
       {
+        userID,
         studentId,
         classroomId,
         classID,

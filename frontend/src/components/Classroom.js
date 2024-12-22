@@ -86,7 +86,6 @@ const Classroom = () => {
         `http://localhost:3000/classes/${classID}/classrooms/${classroomId}/selectStudent`,
         {
           isColdCall,
-          userID, // Optionally include userID if needed by backend
         }
       )
       .catch((error) => {
