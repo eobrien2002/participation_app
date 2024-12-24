@@ -1,10 +1,16 @@
-/* HomePage.css */
+/* Global Box Sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 /* Container */
 .homepage-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
 }
 
 /* Header */
@@ -12,12 +18,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
+  padding: 20px 40px; /* Increased horizontal padding */
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 900; /* Reduced z-index to be below modal */
+  width: 100%;
 }
 
 .brand-name {
@@ -42,12 +49,14 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 100px 20px;
+  padding: 120px 40px; /* Increased padding */
   background: var(--color-light-bg);
+  width: 100%;
 }
 
 .hero-content {
-  max-width: 600px;
+  width: 100%;
+  max-width: none; /* Removed max-width */
 }
 
 .hero-title {
@@ -66,12 +75,14 @@
 /* Create Classroom Section */
 .create-classroom-section {
   text-align: center;
-  padding: 80px 20px;
+  padding: 100px 40px; /* Increased padding */
   background: var(--color-bg);
+  width: 100%;
 }
 
 .create-classroom-content {
-  max-width: 600px;
+  width: 100%;
+  max-width: none; /* Removed max-width */
   margin: 0 auto;
 }
 
@@ -91,26 +102,30 @@
 /* Benefits Section */
 .benefits-section {
   background: var(--color-light-bg);
-  padding: 60px 20px;
+  padding: 80px 40px; /* Increased padding */
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .benefits-container {
   display: flex;
-  gap: 30px;
-  max-width: 1000px;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-around; /* Changed to space-around */
+  gap: 30px;
+  max-width: 1200px; /* Increased max-width */
+  padding: 0 20px;
+  width: 100%;
 }
 
 .benefit-tile {
+  flex: 1 1 280px; /* Flexible width */
+  max-width: 30%; /* Adjusted max-width */
   background: #fff;
   border: 1px solid var(--color-border);
   border-radius: 8px;
   text-align: center;
-  padding: 30px 20px;
-  width: 280px;
+  padding: 40px 20px; /* Increased padding */
   transition: box-shadow var(--transition-speed) ease,
     transform var(--transition-speed) ease;
 }
@@ -148,18 +163,19 @@
 
 /* Modal Styles */
 .modal {
-  position: absolute;
+  position: fixed; /* Changed from absolute to fixed */
   top: 50%;
   left: 50%;
   right: auto;
   bottom: auto;
   transform: translate(-50%, -50%);
   background: var(--color-bg);
-  padding: 30px;
+  padding: 40px; /* Increased padding */
   border-radius: 8px;
-  max-width: 400px;
+  max-width: 500px; /* Increased max-width */
   width: 90%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1100; /* Added z-index to ensure modal is above overlay and header */
 }
 
 .modal-overlay {
@@ -169,6 +185,7 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000; /* Ensures overlay is above header but below modal */
 }
 
 .modal-close-icon {
@@ -189,7 +206,7 @@
 }
 
 .input-field {
-  width: 100%;
+  width: 100%; /* Full width */
   padding: 10px 15px;
   margin-bottom: 15px;
   border: 1px solid var(--color-border);
@@ -211,10 +228,10 @@
 
 .dropdown-select {
   flex: 1;
-  padding: 8px 10px; /* Reduced padding for smaller size */
+  padding: 8px 10px;
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  font-size: 13px; /* Smaller font size */
+  font-size: 13px;
   background-color: #fff;
   cursor: pointer;
 }
@@ -243,11 +260,11 @@
 .modal-button-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px; /* Increased gap */
 }
 
 .button-primary {
-  padding: 10px 20px;
+  padding: 12px 20px; /* Slightly increased padding */
   background-color: var(--color-primary);
   color: #fff;
   border: none;
@@ -257,7 +274,7 @@
 }
 
 .button-secondary {
-  padding: 10px 20px;
+  padding: 12px 20px;
   background-color: var(--color-secondary);
   color: #fff;
   border: none;
@@ -301,26 +318,30 @@
   padding: 0;
 }
 
-/* Success Message Styling */
-.success-message {
-  color: green; /* Adjust the color as per your theme */
-  font-size: 14px;
-  text-align: center;
-  margin-bottom: 15px;
+/* Responsive */
+@media (max-width: 1200px) {
+  .benefit-tile {
+    max-width: 45%; /* Adjusted for medium screens */
+  }
 }
 
-/* Responsive */
+@media (max-width: 992px) {
+  .benefit-tile {
+    max-width: 60%; /* Further adjustment */
+  }
+}
+
 @media (max-width: 768px) {
   .homepage-header {
-    padding: 10px 20px;
+    padding: 15px 20px;
   }
 
-  .hero-title {
-    font-size: 24px;
+  .hero-section {
+    padding: 80px 20px;
   }
 
-  .section-title {
-    font-size: 20px;
+  .create-classroom-section {
+    padding: 80px 20px;
   }
 
   .benefits-container {
@@ -328,8 +349,8 @@
   }
 
   .benefit-tile {
-    width: 100%;
-    max-width: 300px;
+    max-width: 100%; /* Full width on small screens */
+    padding: 30px 15px; /* Adjusted padding */
   }
 }
 
@@ -340,5 +361,9 @@
 
   .create-classroom-section {
     padding: 60px 20px;
+  }
+
+  .benefit-tile {
+    padding: 20px;
   }
 }

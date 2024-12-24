@@ -227,7 +227,7 @@ const Dashboard = () => {
           <FaHome className="logo-icon" />
         </button>
         <div className="brand-name">Quotient Dashboard</div>
-        {/* **Conditionally Render Edit Button Based on Role** */}
+        {/* Conditionally Render Edit Button Based on Role */}
         {role === "teacher" && (
           <div className="dashboard-actions">
             <button

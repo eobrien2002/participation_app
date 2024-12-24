@@ -1,7 +1,8 @@
 // VerifyEmail.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../css/HomePage.css";
+import "../css/styles.css";
+import "../css/verifyEmail.css";
 
 const VerifyEmail = () => {
   const [message, setMessage] = useState("");

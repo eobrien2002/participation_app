@@ -7,6 +7,9 @@ import copy from "copy-to-clipboard";
 import { FaTrash, FaEdit, FaArrowLeft, FaUserPlus } from "react-icons/fa";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"; // <-- NEW import
 import "../css/ClassPage.css";
+// ---- NEW IMPORT for the separate Dashboards ----
+import TeacherDashboard from "./TeacherDashboard"; // (Adjust path if needed)
+import StudentDashboard from "./StudentDashboard"; // <-- Import StudentDashboard
 
 // Bind modal to your appElement for accessibility
 Modal.setAppElement("#root");
@@ -19,8 +22,8 @@ const ClassPage = () => {
   const userID = params.get("userID");
   const className = params.get("className");
   const role = params.get("role");
-  const studentId = params.get("studentId");
-  const studentName = params.get("studentName");
+  const studentId = params.get("studentId"); // Ensure this is correctly passed
+  const studentName = params.get("studentName"); // Ensure this is correctly passed
 
   const [classrooms, setClassrooms] = useState([]);
   const [newClassroomName, setNewClassroomName] = useState("");
@@ -58,7 +61,9 @@ const ClassPage = () => {
     Unassigned: [],
   });
 
-  // Fetch classrooms on component mount or when classID/userID changes
+  // ---------------------------
+  // Fetch classrooms
+  // ---------------------------
   useEffect(() => {
     const fetchClassrooms = async () => {
       setLoading(true);
@@ -83,7 +88,9 @@ const ClassPage = () => {
     }
   }, [classID, userID]);
 
-  // Fetch students if the role is teacher
+  // ---------------------------
+  // Fetch students (if teacher)
+  // ---------------------------
   useEffect(() => {
     const fetchStudents = async () => {
       setStudentsLoading(true);
@@ -108,8 +115,9 @@ const ClassPage = () => {
     }
   }, [classID, role]);
 
-  // ---- NEW: Once 'students' is loaded, distribute them into sections.
-  //      For simplicity, let's assume each student has a "section" property.
+  // ---------------------------
+  // Populate sections from loaded students
+  // ---------------------------
   useEffect(() => {
     if (!studentsLoading && students.length > 0) {
       const newSections = {
@@ -137,11 +145,13 @@ const ClassPage = () => {
     }
   }, [students, studentsLoading]);
 
-  // ---- NEW: Handle Drag End ----
-  const handleDragEnd = (result) => {
+  // ---------------------------
+  // DnD handlers
+  // ---------------------------
+  const handleDragEnd = async (result) => {
     const { source, destination, draggableId } = result;
 
-    // If the user drops outside of any droppable zone => move to "Unassigned"
+    // If dropped outside of any droppable => put it to "Unassigned"
     if (!destination) {
       const sourceSection = source.droppableId;
       const draggedStudent = sections[sourceSection].find(
@@ -164,7 +174,7 @@ const ClassPage = () => {
       return;
     }
 
-    // If dropping in the same section but different index:
+    // If dropping in the same section
     if (destination.droppableId === source.droppableId) {
       const sectionStudents = Array.from(sections[source.droppableId]);
       const [movedStudent] = sectionStudents.splice(source.index, 1);
@@ -187,10 +197,47 @@ const ClassPage = () => {
         [source.droppableId]: sourceStudents,
         [destination.droppableId]: destinationStudents,
       }));
+
+      // Call backend endpoint to save section in DB
+      try {
+        await axios.post("http://localhost:3000/update-student-section", {
+          classID,
+          studentID: movedStudent.id,
+          section: destination.droppableId, // Corrected variable name
+        });
+        setSuccessMessage(
+          `Moved ${movedStudent.email} to ${destination.droppableId}`
+        );
+        // Optionally, you can refresh the students list or sections here
+      } catch (err) {
+        console.error("Error updating student section:", err);
+        setErrorMessage("Failed to update student section. Please try again.");
+
+        // Optionally, revert the UI changes if the backend update fails
+        // Revert to previous state
+        setSections((prev) => {
+          // Remove student from destination
+          const updatedDestination = prev[destination.droppableId].filter(
+            (s) => s.id !== movedStudent.id
+          );
+
+          // Add student back to source
+          const updatedSource = Array.from(prev[source.droppableId]);
+          updatedSource.splice(source.index, 0, movedStudent);
+
+          return {
+            ...prev,
+            [source.droppableId]: updatedSource,
+            [destination.droppableId]: updatedDestination,
+          };
+        });
+      }
     }
   };
 
-  // Handle creating a new classroom
+  // ---------------------------
+  // Create classroom
+  // ---------------------------
   const handleCreateClassroom = async (e) => {
     e.preventDefault();
     setErrorMessage("");
@@ -210,7 +257,7 @@ const ClassPage = () => {
         if (response.data.classroom) {
           setClassrooms([...classrooms, response.data.classroom]);
         } else {
-          // Fetch the updated list of classrooms
+          // Refresh the updated list of classrooms
           const updatedRes = await axios.get(
             `http://localhost:3000/user-classrooms/${classID}/${userID}`
           );
@@ -232,12 +279,16 @@ const ClassPage = () => {
     }
   };
 
-  // Navigate to Classroom Data Page
+  // ---------------------------
+  // Classroom click => navigate
+  // ---------------------------
   const handleClassroomClick = (classroomId) => {
     navigate(`/classroom/${classroomId}?classID=${classID}&userID=${userID}`);
   };
 
-  // Open the delete confirmation modal
+  // ---------------------------
+  // Delete confirmation modal
+  // ---------------------------
   const openDeleteModal = (room) => {
     setClassroomToDelete(room);
     setIsModalOpen(true);
@@ -245,13 +296,11 @@ const ClassPage = () => {
     setSuccessMessage("");
   };
 
-  // Close the delete confirmation modal
   const closeDeleteModal = () => {
     setIsModalOpen(false);
     setClassroomToDelete(null);
   };
 
-  // Handle deleting a classroom
   const handleDeleteClassroom = async () => {
     if (!classroomToDelete) return;
     setDeleteLoading(true);
@@ -282,18 +331,25 @@ const ClassPage = () => {
     }
   };
 
-  // Toggle Edit Mode
+  // ---------------------------
+  // Edit Mode Toggle
+  // ---------------------------
   const toggleEditMode = () => {
     setEditMode(!editMode);
     setErrorMessage("");
     setSuccessMessage("");
   };
 
+  // ---------------------------
   // Navigate back to Dashboard
+  // ---------------------------
   const navigateBack = () => {
     navigate(`/dashboard?userID=${userID}`);
   };
 
+  // ---------------------------
+  // Invite Modal
+  // ---------------------------
   const openInviteModal = () => setShowInviteModal(true);
   const closeInviteModal = () => setShowInviteModal(false);
 
@@ -302,7 +358,9 @@ const ClassPage = () => {
     alert("Invite link copied to clipboard!");
   };
 
-  // Handle joining a classroom (for students)
+  // ---------------------------
+  // Join Classroom (student)
+  // ---------------------------
   const joinClassroom = async () => {
     if (!joinClassroomId.trim()) {
       setJoinErrorMessage("Please enter a Classroom ID.");
@@ -321,7 +379,6 @@ const ClassPage = () => {
 
       if (response.data.success) {
         const { className, classroomName, classID: newClassID } = response.data;
-
         navigate(`/student/${joinClassroomId.trim()}`, {
           state: {
             className,
@@ -361,7 +418,7 @@ const ClassPage = () => {
           <FaArrowLeft className="classpage-back-icon" />
           <span className="classpage-back-text">Back</span>
         </button>
-        <div className="classpage-title">Class: {className}</div>
+        <div className="classpage-title">{className}</div>
         <div className="classpage-actions">
           {role === "teacher" && (
             <>
@@ -491,7 +548,7 @@ const ClassPage = () => {
                 No students enrolled in this class yet.
               </p>
             ) : (
-              // ---- NEW: Replace simple list with DnD columns
+              // ---- DnD columns
               <div className="classpage-dnd-container">
                 <DragDropContext onDragEnd={handleDragEnd}>
                   {/* Top row: Section A, Section B, Section C */}
@@ -540,51 +597,73 @@ const ClassPage = () => {
                     )}
                   </div>
 
-                  {/* Below row: Unassigned */}
-                  <div className="classpage-dnd-unassigned">
-                    <Droppable droppableId="Unassigned">
-                      {(provided, snapshot) => (
-                        <div
-                          className={`classpage-dnd-column ${
-                            snapshot.isDraggingOver
-                              ? "classpage-dnd-column-over"
-                              : ""
-                          }`}
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                        >
-                          <h4>Unassigned</h4>
-                          {sections["Unassigned"].map((student, index) => (
-                            <Draggable
-                              key={student.id}
-                              draggableId={student.id}
-                              index={index}
-                            >
-                              {(providedDraggable, snapshotDraggable) => (
-                                <div
-                                  className={`classpage-dnd-item ${
-                                    snapshotDraggable.isDragging
-                                      ? "classpage-dnd-item-dragging"
-                                      : ""
-                                  }`}
-                                  ref={providedDraggable.innerRef}
-                                  {...providedDraggable.draggableProps}
-                                  {...providedDraggable.dragHandleProps}
-                                >
-                                  {student.email || "Unnamed Student"}
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                  </div>
+                  {/* Below row: Unassigned (only if there are unassigned students) */}
+                  {sections["Unassigned"].length > 0 && (
+                    <div className="classpage-dnd-unassigned">
+                      <Droppable droppableId="Unassigned">
+                        {(provided, snapshot) => (
+                          <div
+                            className={`classpage-dnd-column ${
+                              snapshot.isDraggingOver
+                                ? "classpage-dnd-column-over"
+                                : ""
+                            }`}
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                          >
+                            <h4>Unassigned</h4>
+                            {sections["Unassigned"].map((student, index) => (
+                              <Draggable
+                                key={student.id}
+                                draggableId={student.id}
+                                index={index}
+                              >
+                                {(providedDraggable, snapshotDraggable) => (
+                                  <div
+                                    className={`classpage-dnd-item ${
+                                      snapshotDraggable.isDragging
+                                        ? "classpage-dnd-item-dragging"
+                                        : ""
+                                    }`}
+                                    ref={providedDraggable.innerRef}
+                                    {...providedDraggable.draggableProps}
+                                    {...providedDraggable.dragHandleProps}
+                                  >
+                                    {student.email || "Unnamed Student"}
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </div>
+                  )}
                 </DragDropContext>
               </div>
             )}
           </section>
+        )}
+
+        {/* ------------- NEW Dashboard Section ------------- */}
+        {role === "teacher" && (
+          <>
+            <TeacherDashboard
+              role={role}
+              classID={classID}
+              students={students}
+            />
+          </>
+        )}
+
+        {/* ------------- NEW: Student Dashboard Section ------------- */}
+        {role === "student" && (
+          <StudentDashboard
+            classID={classID}
+            userID={userID}
+            studentName={studentName}
+          />
         )}
 
         {/* Join Classroom Section - Only Visible to Students */}

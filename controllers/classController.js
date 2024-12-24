@@ -1,6 +1,7 @@
 // controllers/classController.js
 const { db, admin } = require("../config/firebase");
 const { v4: uuidv4 } = require("uuid");
+
 const getClassroomsCollection = (classID) => {
   return db.collection("classes").doc(classID).collection("classrooms");
 };
@@ -369,6 +370,7 @@ const getStudentsInClass = async (req, res) => {
         return {
           id: doc.id,
           email: userData.email || "", // or userData.name, etc.
+          name: userData.name || "",
           // If we have a section stored, return it. Otherwise default to "Unassigned."
           section: studentSections[doc.id] || "Unassigned",
         };

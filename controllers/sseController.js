@@ -1,10 +1,12 @@
 // controllers/sseController.js
 const { getClassroomData } = require("../services/classroomService");
-
+const { removeStudentFromActive } = require("../services/classroomService");
+const broadcastEvent = require("../utils/broadcast");
 const clients = {}; // SSE clients per classroom
 
 const events = async (req, res) => {
-  const { classID, classroomId, role, studentId, studentName } = req.query;
+  const { classID, classroomId, role, userID, studentId, studentName } =
+    req.query;
 
   console.log(
     `${role} connected to class ${classID}, classroom ${classroomId}`
@@ -39,11 +41,27 @@ const events = async (req, res) => {
   clients[clientKey].push(res);
 
   // Handle client disconnect
-  req.on("close", () => {
+  req.on("close", async () => {
     console.log(
       `${role} disconnected from class ${classID}, classroom ${classroomId}`
     );
     clients[clientKey] = clients[clientKey].filter((client) => client !== res);
+    try {
+      const updatedActiveStudents = await removeStudentFromActive(
+        classID,
+        classroomId,
+        userID,
+        clients
+      );
+      broadcastEvent(
+        clients,
+        `${classID}_${classroomId}`,
+        "attendanceUpdate",
+        updatedActiveStudents
+      );
+    } catch (error) {
+      console.error("Error removing student from active list:", error);
+    }
   });
 };
 

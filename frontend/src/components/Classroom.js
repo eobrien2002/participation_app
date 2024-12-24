@@ -38,7 +38,7 @@ const Classroom = () => {
     eventSource.addEventListener("initialData", (event) => {
       const data = JSON.parse(event.data);
       setQueue(data.queue);
-      setAttendanceList(data.attended);
+      setAttendanceList(data.activeStudent);
       setSelectedStudent(data.selectedStudent);
       setClassroomName(data.name);
     });
@@ -122,7 +122,7 @@ const Classroom = () => {
       <div className="container">
         <div className="attendance-stats">
           <div className="attendance-list">
-            {attendanceList
+            {(attendanceList || [])
               .slice(-20)
               .reverse()
               .map((student, index) => (
@@ -130,7 +130,9 @@ const Classroom = () => {
               ))}
           </div>
           <div className="class-stats">
-            <span>Total Students: {attendanceList.length}</span>
+            <span>
+              Total Students: {attendanceList ? attendanceList.length : 0}
+            </span>
           </div>
         </div>
         <div className="main-content">

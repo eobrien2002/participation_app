@@ -1,0 +1,138 @@
+/* teachdashboard.css */
+
+/* General Section Styling */
+.teacherdashboard-section {
+  margin-top: 2rem;
+  font-family: inherit; /* Inherits from ClassPage.css */
+  color: var(--color-dark);
+}
+
+/* Controls Section */
+.teacherdashboard-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center; /* Vertically centers the items */
+  margin-bottom: 16px;
+}
+
+.teacherdashboard-controls .control-item {
+  margin-right: 16px;
+  display: flex;
+  align-items: center; /* Vertically centers the control within the item */
+}
+
+/* Remove margin-top to prevent vertical misalignment */
+.teacherdashboard-controls .select,
+.teacherdashboard-controls .session-select {
+  width: 240px; /* Adjust as needed */
+  margin-right: 16px;
+  /* Remove margin-top */
+}
+
+/* Adjust Radio Button Group Alignment */
+.teacherdashboard-controls .ant-radio-group {
+  display: flex;
+  align-items: center;
+  height: 32px; /* Ensures consistent height */
+}
+
+.teacherdashboard-controls .ant-radio-button-wrapper {
+  display: flex;
+  align-items: center; /* Vertically centers the content */
+  justify-content: center; /* Horizontally centers the content */
+  padding: 6px 12px;
+  font-size: 14px;
+  color: var(--color-dark);
+  height: 32px; /* Ensures consistent height */
+  line-height: 20px; /* Adjusts text alignment */
+}
+
+.teacherdashboard-controls .ant-radio-button-wrapper-checked {
+  background-color: var(--color-primary);
+  color: var(--color-light);
+}
+
+.teacherdashboard-controls .ant-radio-button-wrapper:hover {
+  background-color: var(--color-tertiary);
+}
+
+/* Customize the focus outline for radio buttons */
+.teacherdashboard-controls .ant-radio-button-wrapper:focus,
+.teacherdashboard-controls .ant-radio-button-wrapper:active {
+  outline: none; /* Removes the default outline */
+  box-shadow: 0 0 0 2px var(--color-primary-light); /* Adds a custom shadow */
+}
+
+/* Chart Card Styling */
+.teacherdashboard-chart-card {
+  margin-top: 24px;
+  background-color: var(--color-light);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.teacherdashboard-chart-title {
+  text-align: center;
+  font-size: 16px;
+  color: var(--color-primary);
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+/* Chart Container */
+.teacherdashboard-chart-container {
+  width: 100%;
+  height: 450px;
+}
+
+/* Drill-Down Table Card */
+.teacherdashboard-drilldown-card {
+  margin-top: 24px;
+  background-color: var(--color-light);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .teacherdashboard-controls .select {
+    width: 200px;
+  }
+
+  .teacherdashboard-controls .session-select {
+    width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .teacherdashboard-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .teacherdashboard-controls .control-item {
+    margin-right: 0;
+    margin-bottom: 12px;
+    width: 100%;
+  }
+
+  .teacherdashboard-controls .select,
+  .teacherdashboard-controls .session-select {
+    width: 100%;
+  }
+
+  .teacherdashboard-chart-container {
+    height: 350px;
+  }
+}
+
+.classpage-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 15px;
+}

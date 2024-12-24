@@ -33,4 +33,14 @@ router.post(
   classroomController.logAttendance
 );
 
+router.get(
+  "/classes/:classID/dashboard",
+  classroomController.getClassDashboard
+);
+
+router.get(
+  "/classes/:classID/students/:userID/dashboard",
+  classroomController.getStudentDashboard
+);
+
 module.exports = router;

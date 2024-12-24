@@ -30,7 +30,30 @@ const createClassroom = async (name, creatorId, classID) => {
   return classroomId;
 };
 
+const removeStudentFromActive = async (
+  classID,
+  classroomId,
+  userID,
+  clients
+) => {
+  const classroomRef = getClassroomsCollection(classID).doc(classroomId);
+  const classroomDoc = await classroomRef.get();
+
+  if (!classroomDoc.exists) {
+    throw new Error("Classroom not found");
+  }
+
+  let activeStudents = classroomDoc.data().activeStudent || [];
+  activeStudents = activeStudents.filter(
+    (student) => student.userID !== userID
+  );
+  await classroomRef.update({ activeStudent: activeStudents });
+
+  return activeStudents; // Return the updated list for further processing or testing
+};
+
 module.exports = {
   getClassroomData,
   createClassroom,
+  removeStudentFromActive,
 };

@@ -22,13 +22,15 @@ const Student = () => {
 
     // Set up EventSource with classID and classroomId as query params
     const eventSource = new EventSource(
-      `http://localhost:3000/events?classID=${classID}&classroomId=${classroomId}&role=student&studentId=${studentId}&studentName=${studentName}`
+      `http://localhost:3000/events?classID=${classID}&classroomId=${classroomId}&role=student&studentId=${studentId}&studentName=${studentName}&userID=${userID}`
     );
 
     eventSource.addEventListener("initialData", (event) => {
       const data = JSON.parse(event.data);
       setIsHandRaised(data.queue.some((student) => student.userID === userID));
-      setParticipationCount(data.participation[userID] || 0);
+      // Access the 'count' property instead of the entire object
+      const participationInfo = data.participation[userID];
+      setParticipationCount(participationInfo ? participationInfo.count : 0);
     });
 
     eventSource.addEventListener("participationUpdate", (event) => {
